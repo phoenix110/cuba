@@ -310,7 +310,9 @@ public class WebTree<E extends Entity>
         super.setDebugId(id);
 
         AppUI ui = AppUI.getCurrent();
-        if (id != null && ui != null) {
+        if (id != null
+                && ui != null
+                && ui.isPerformanceTestMode()) {
             //noinspection unchecked
             TreeComposition composition = (TreeComposition) getComposition();
             composition.getTree().setId("cubaTree_" + ui.getTestIdManager().getTestId(id));
