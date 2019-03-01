@@ -71,7 +71,18 @@ public class GroupTableLoader extends AbstractTableLoader<GroupTable> {
             );
         }
 
-        columns.addAll(super.loadColumns(component, columnsElement, metaClasss, view));
+        // if includeBy is used, check for duplicate
+        String includeBy = columnsElement.attributeValue("includeBy");
+        if (StringUtils.isNotEmpty(includeBy)) {
+            List<Table.Column> columnList = super.loadColumns(component, columnsElement, metaClasss, view);
+            for (Table.Column column : columnList) {
+                if (!columns.contains(column)) {
+                    columns.add(column);
+                }
+            }
+        } else {
+            columns.addAll(super.loadColumns(component, columnsElement, metaClasss, view));
+        }
 
         return columns;
     }
