@@ -332,7 +332,11 @@ public abstract class AbstractTableLoader<T extends Table> extends ActionsHolder
                     column = documentFactory.createElement("column");
                     column.add(documentFactory.createAttribute(column, "id", property));
                 }
-                columns.add(loadColumn(column, metaClass));
+
+                String visible = column.attributeValue("visible");
+                if (StringUtils.isEmpty(visible) || Boolean.parseBoolean(visible)) {
+                    columns.add(loadColumn(column, metaClass));
+                }
             }
             return columns;
         }
