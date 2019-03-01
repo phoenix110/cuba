@@ -23,6 +23,7 @@ import com.haulmont.chile.core.datatypes.Datatype;
 import com.haulmont.chile.core.datatypes.DatatypeRegistry;
 import com.haulmont.chile.core.datatypes.TimeZoneAwareDatatype;
 import com.haulmont.chile.core.model.*;
+import com.haulmont.chile.core.model.utils.InstanceUtils;
 import com.haulmont.cuba.core.app.dynamicattributes.DynamicAttributesTools;
 import com.haulmont.cuba.core.app.dynamicattributes.DynamicAttributesUtils;
 import com.haulmont.cuba.core.app.dynamicattributes.PropertyType;
@@ -1143,6 +1144,35 @@ public class MetadataTools {
         if (source instanceof BaseGenericIdEntity && destination instanceof BaseGenericIdEntity) {
             ((BaseGenericIdEntity) destination).setDynamicAttributes(((BaseGenericIdEntity<?>) source).getDynamicAttributes());
         }
+    }
+
+    /**
+     * Check that view contains property path.
+     *
+     * @param view view
+     * @param path property path like car.repair.name
+     * @return true if view contains path
+     */
+    public boolean viewContainsPropertyPath(View view, String path) {
+        String[] properties = InstanceUtils.parseValuePath(path);
+        View currentView = view;
+        for (int i = 0; i < properties.length; i++) {
+            if (currentView == null) {
+                return false;
+            }
+
+            ViewProperty viewProperty = currentView.getProperty(properties[i]);
+            if (viewProperty == null) {
+                return false;
+            }
+
+            currentView = viewProperty.getView();
+            if (currentView == null && (i + 1 == properties.length)) {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     protected void internalTraverseAttributes(Entity entity, EntityAttributeVisitor visitor, HashSet<Object> visited) {

@@ -1158,6 +1158,19 @@
         <xs:attribute name="pattern" type="xs:string"/>
     </xs:complexType>
 
+    <xs:attributeGroup name="columnsLoadType">
+        <xs:attribute name="includeBy">
+            <xs:simpleType>
+                <xs:restriction id="types">
+                    <xs:enumeration value="view"/>
+                    <xs:enumeration value="local"/>
+                </xs:restriction>
+            </xs:simpleType>
+        </xs:attribute>
+        <xs:attribute name="additionalProperties" type="xs:string"/>
+        <xs:attribute name="exclude" type="xs:string"/>
+    </xs:attributeGroup>
+
     <xs:complexType name="tableRowsType">
         <xs:attribute name="datasource" type="xs:string"/>
     </xs:complexType>
@@ -1171,6 +1184,7 @@
         <xs:sequence>
             <xs:element name="column" maxOccurs="unbounded" type="tableColumnComponent"/>
         </xs:sequence>
+        <xs:attributeGroup ref="columnsLoadType"/>
     </xs:complexType>
 
     <xs:complexType name="groupTableColumnsType">
@@ -1184,6 +1198,7 @@
             </xs:element>
             <xs:element name="column" maxOccurs="unbounded" type="tableColumnComponent"/>
         </xs:sequence>
+        <xs:attributeGroup ref="columnsLoadType"/>
     </xs:complexType>
 
     <xs:complexType name="dataGridColumnsList">
