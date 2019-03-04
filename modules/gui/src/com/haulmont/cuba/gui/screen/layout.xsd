@@ -1167,7 +1167,6 @@
                 </xs:restriction>
             </xs:simpleType>
         </xs:attribute>
-        <xs:attribute name="additionalProperties" type="xs:string"/>
         <xs:attribute name="exclude" type="xs:string"/>
     </xs:attributeGroup>
 

@@ -29,10 +29,11 @@
 
     <layout spacing="true">
         <groupTable id="usersTable" width="100%" height="100%" dataContainer="usersDc">
-            <columns includeBy="view" exclude="password, group" additionalProperties="group.name">
+            <columns includeBy="view" exclude="password, group">
                 <group>
                     <column id="login"/>
                 </group>
+                <column id="group.name"/>
                 <column id="changePasswordAtNextLogon" visible="false"/>
                 <column id="active" editable="true"/>
             </columns>
