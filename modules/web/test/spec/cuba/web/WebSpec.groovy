@@ -149,7 +149,10 @@ class WebSpec extends Specification {
 
     static class TestApp extends DefaultApp {
         TestApp() {
-            this.themeConstants = new ThemeConstants([:])
+            this.themeConstants = new ThemeConstants(["cuba.web.DataGrid.defaultColumnWidth"      : "-1",
+                                                      "cuba.web.DataGrid.defaultColumnMaxWidth"   : "-1",
+                                                      "cuba.web.DataGrid.defaultColumnMinWidth"   : "10",
+                                                      "cuba.web.DataGrid.defaultColumnExpandRatio": "-1"])
         }
     }
 }
