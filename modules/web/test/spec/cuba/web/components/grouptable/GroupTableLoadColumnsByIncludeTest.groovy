@@ -52,7 +52,7 @@ class GroupTableLoadColumnsByIncludeTest extends UiScreenSpec {
         windowConfig.initialized = false
     }
 
-    def "test includeBy view"() {
+    def "includeBy view"() {
         def screens = vaadinUi.screens
 
         def mainWindow = screens.create("mainWindow", OpenMode.ROOT)
@@ -62,28 +62,107 @@ class GroupTableLoadColumnsByIncludeTest extends UiScreenSpec {
         groupTableScreen.show()
 
         when:
-        def usersTable = groupTableScreen.getWindow().getComponentNN("usersTable") as GroupTable
-        def columnList = usersTable.getColumns()
+        def groupTable = groupTableScreen.getWindow().getComponentNN("usersTableView") as GroupTable
+        def columnList = groupTable.getColumns()
 
         then:
-        columnList.size() == 15
-
-        usersTable.getColumn("password") == null
-        usersTable.getColumn("group") == null
-
-        def loginColumn = usersTable.getColumn("login")
-        loginColumn.isGroupAllowed()
-
-        usersTable.getColumn("group.name") != null
-
-        def columnActive = usersTable.getColumn("active")
-        columnActive.isEditable()
+        columnList.size() == 17
     }
 
-    def "test includeBy local"() {
+    def "includeBy local"() {
         def screens = vaadinUi.screens
 
         def mainWindow = screens.create("mainWindow", OpenMode.ROOT)
         screens.show(mainWindow)
+
+        def groupTableScreen = screens.create(GroupTableLoadColumnsByIncludeScreen)
+        groupTableScreen.show()
+
+        when:
+        def groupTable = groupTableScreen.getWindow().getComponentNN("usersTableLocal") as GroupTable
+        def columnList = groupTable.getColumns()
+
+        then:
+        columnList.size() == 16
+    }
+
+    def "entity with embedded property"() {
+        def screens = vaadinUi.screens
+
+        def mainWindow = screens.create("mainWindow", OpenMode.ROOT)
+        screens.show(mainWindow)
+
+        def groupTableScreen = screens.create(GroupTableLoadColumnsByIncludeScreen)
+        groupTableScreen.show()
+
+        when:
+        def groupTable = groupTableScreen.getWindow().getComponentNN("customersEmbTable") as GroupTable
+        def columnList = groupTable.getColumns()
+
+        then:
+        columnList.size() == 6
+
+        groupTable.getColumn("address.city") != null
+        groupTable.getColumn("address.zip") != null
+        groupTable.getColumn("address") != null
+    }
+
+    def "grouping and overriding columns"() {
+        def screens = vaadinUi.screens
+
+        def mainWindow = screens.create("mainWindow", OpenMode.ROOT)
+        screens.show(mainWindow)
+
+        def groupTableScreen = screens.create(GroupTableLoadColumnsByIncludeScreen)
+        groupTableScreen.show()
+
+        when:
+        def groupTable = groupTableScreen.getWindow().getComponentNN("customersTableGrouping") as GroupTable
+        def columnList = groupTable.getColumns()
+
+        then:
+        columnList.size() == 4
+
+        groupTable.getColumn("address").isGroupAllowed()
+        !groupTable.getColumn("name").isSortable()
+    }
+
+    def "group table with non persistent entity"() {
+        def screens = vaadinUi.screens
+
+        def mainWindow = screens.create("mainWindow", OpenMode.ROOT)
+        screens.show(mainWindow)
+
+        def groupTableScreen = screens.create(GroupTableLoadColumnsByIncludeScreen)
+        groupTableScreen.show()
+
+        when:
+        def groupTable = groupTableScreen.getWindow().getComponentNN("goodsInfoTable") as GroupTable
+        def columnList = groupTable.getColumns()
+
+        then:
+        columnList.size() == 4
+
+        groupTable.getColumn("isFragile") == null
+    }
+
+    def "exclude property"() {
+        def screens = vaadinUi.screens
+
+        def mainWindow = screens.create("mainWindow", OpenMode.ROOT)
+        screens.show(mainWindow)
+
+        def groupTableScreen = screens.create(GroupTableLoadColumnsByIncludeScreen)
+        groupTableScreen.show()
+
+        when:
+        def groupTable = groupTableScreen.getWindow().getComponentNN("customersTableExcluding") as GroupTable
+        def columnList = groupTable.getColumns()
+
+        then:
+        columnList.size() == 2
+
+        groupTable.getColumn("address") == null
+        groupTable.getColumn("name") == null
     }
 }

@@ -23,6 +23,7 @@ import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.MetaProperty;
 import com.haulmont.chile.core.model.MetaPropertyPath;
 import com.haulmont.chile.core.model.MetadataObject;
+import com.haulmont.chile.core.model.utils.InstanceUtils;
 import com.haulmont.cuba.client.ClientConfig;
 import com.haulmont.cuba.core.app.dynamicattributes.DynamicAttributesUtils;
 import com.haulmont.cuba.core.app.dynamicattributes.PropertyType;
@@ -308,55 +309,72 @@ public abstract class AbstractTableLoader<T extends Table> extends ActionsHolder
         }
     }
 
+    protected List<Table.Column> loadColumnsByInclude(String includeBy, Element columnsElement, MetaClass metaClass, View view) {
+        List<Table.Column> columns;
+
+        Collection<String> appliedProperties = Collections.emptyList();
+        View currentView = view;
+        if (includeBy.equals("view")) {
+            appliedProperties = getAppliedProperties(columnsElement, currentView, metaClass);
+        } else if (includeBy.equals("local")) {
+            ViewRepository viewRepository = beanLocator.get(ViewRepository.NAME);
+            currentView = viewRepository.getView(metaClass, View.LOCAL);
+            appliedProperties = getAppliedProperties(columnsElement, currentView, metaClass);
+        }
+
+        columns = new ArrayList<>(appliedProperties.size());
+        List<Element> columnElements = columnsElement.elements("column");
+        Set<Element> overriddenColumns = new HashSet<>();
+
+        DocumentFactory documentFactory = DatatypeElementFactory.getInstance();
+
+        for (String property : appliedProperties) {
+            Element column = getOverriddenColumn(columnElements, property);
+            if (column == null) {
+                column = documentFactory.createElement("column");
+                column.add(documentFactory.createAttribute(column, "id", property));
+            } else {
+                overriddenColumns.add(column);
+            }
+
+            String visible = column.attributeValue("visible");
+            if (StringUtils.isEmpty(visible) || Boolean.parseBoolean(visible)) {
+                columns.add(loadColumn(column, metaClass));
+            }
+        }
+
+        // load remains columns
+        List<Element> remainedColumns = columnsElement.elements("column");
+        for (Element column : remainedColumns) {
+            if (overriddenColumns.contains(column)) {
+                continue;
+            }
+
+            // check property and add
+            String propertyId = column.attributeValue("id");
+            if (StringUtils.isNotEmpty(propertyId)) {
+                MetaPropertyPath metaPropertyPath = DynamicAttributesUtils.getMetaPropertyPath(metaClass, propertyId);
+
+                if ((isPropertyPath(propertyId) && getMetadataTools().viewContainsPropertyPath(currentView, propertyId))
+                        || (!isPropertyPath(propertyId) && view.containsProperty(propertyId))
+                        || metaPropertyPath != null) {
+                    String visible = column.attributeValue("visible");
+                    if (StringUtils.isEmpty(visible) || Boolean.parseBoolean(visible)) {
+                        columns.add(loadColumn(column, metaClass));
+                    }
+                }
+            }
+        }
+
+        return columns;
+    }
+
     protected List<Table.Column> loadColumns(Table component, Element columnsElement, MetaClass metaClass, View view) {
         List<Table.Column> columns;
 
         String includeBy = columnsElement.attributeValue("includeBy");
         if (StringUtils.isNotEmpty(includeBy)) {
-            Collection<String> appliedProperties = Collections.emptyList();
-
-            if (includeBy.equals("view")) {
-                appliedProperties = getAppliedProperties(columnsElement, view, metaClass);
-            } else if (includeBy.equals("local")) {
-                ViewRepository viewRepository = beanLocator.get(ViewRepository.NAME);
-                View localView = viewRepository.getView(metaClass, View.LOCAL);
-                appliedProperties = getAppliedProperties(columnsElement, localView, metaClass);
-            }
-
-            columns = new ArrayList<>(appliedProperties.size());
-            List<Element> columnElements = columnsElement.elements("column");
-            Set<Element> overriddenColumns = new HashSet<>();
-
-            DocumentFactory documentFactory = DatatypeElementFactory.getInstance();
-
-            for (String property : appliedProperties) {
-                Element column = getOverriddenColumn(columnElements, property);
-                if (column == null) {
-                    column = documentFactory.createElement("column");
-                    column.add(documentFactory.createAttribute(column, "id", property));
-                } else {
-                    overriddenColumns.add(column);
-                }
-
-                String visible = column.attributeValue("visible");
-                if (StringUtils.isEmpty(visible) || Boolean.parseBoolean(visible)) {
-                    columns.add(loadColumn(column, metaClass));
-                }
-            }
-
-            // load remains columns
-            List<Element> remainedColumns = columnsElement.elements("column");
-            for (Element column : remainedColumns) {
-                if (overriddenColumns.contains(column)) {
-                    continue;
-                }
-                String visible = column.attributeValue("visible");
-                if (StringUtils.isEmpty(visible) || Boolean.parseBoolean(visible)) {
-                    columns.add(loadColumn(column, metaClass));
-                }
-            }
-
-            return columns;
+            return loadColumnsByInclude(includeBy, columnsElement, metaClass, view);
         }
 
         List<Element> columnElements = columnsElement.elements("column");
@@ -701,6 +719,11 @@ public abstract class AbstractTableLoader<T extends Table> extends ActionsHolder
         }
 
         return appliedProperties;
+    }
+
+    protected boolean isPropertyPath(String property) {
+        String[] strings = InstanceUtils.parseValuePath(property);
+        return strings.length > 1;
     }
 
     @Nullable

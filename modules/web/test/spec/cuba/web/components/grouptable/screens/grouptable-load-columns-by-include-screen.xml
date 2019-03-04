@@ -25,18 +25,53 @@
                 </query>
             </loader>
         </collection>
+        <collection id="customersDc"
+                    class="com.haulmont.cuba.web.testmodel.sales.Customer"
+                    view="customer-with-address">
+            <loader id="customersLd">
+                <query><![CDATA[select e from test$Customer e]]></query>
+            </loader>
+        </collection>
+        <collection id="goodsInfoDc"
+                    class="com.haulmont.cuba.web.testmodel.sample.GoodInfo"/>
     </data>
 
     <layout spacing="true">
-        <groupTable id="usersTable" width="100%" height="100%" dataContainer="usersDc">
-            <columns includeBy="view" exclude="password, group">
-                <group>
-                    <column id="login"/>
-                </group>
-                <column id="group.name"/>
-                <column id="changePasswordAtNextLogon" visible="false"/>
-                <column id="active" editable="true"/>
+        <groupTable id="usersTableView" width="100%" height="100%" dataContainer="usersDc">
+            <columns includeBy="view"/>
+            <rows/>
+        </groupTable>
+
+        <groupTable id="usersTableLocal" width="100%" height="100%" dataContainer="usersDc">
+            <columns includeBy="local"/>
+            <rows/>
+        </groupTable>
+
+        <groupTable id="customersEmbTable" width="100%" height="100%" dataContainer="customersDc">
+            <columns includeBy="view">
+                <column id="address.city"/>
+                <column id="address.zip"/>
             </columns>
+            <rows/>
+        </groupTable>
+
+        <groupTable id="customersTableGrouping" width="100%" height="100%" dataContainer="customersDc">
+            <columns includeBy="view">
+                <group>
+                    <column id="address"/>
+                </group>
+                <column id="name" sortable="false"/>
+            </columns>
+            <rows/>
+        </groupTable>
+
+        <groupTable id="customersTableExcluding" width="100%" height="100%" dataContainer="customersDc">
+            <columns includeBy="view" exclude="address, name"/>
+            <rows/>
+        </groupTable>
+
+        <groupTable id="goodsInfoTable" width="100%" height="100%" dataContainer="goodsInfoDc">
+            <columns includeBy="view" exclude="isFragile"/>
             <rows/>
         </groupTable>
     </layout>
