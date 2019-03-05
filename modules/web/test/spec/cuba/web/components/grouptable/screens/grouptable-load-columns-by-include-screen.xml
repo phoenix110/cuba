@@ -16,47 +16,49 @@
 
 <window xmlns="http://schemas.haulmont.com/cuba/screen/window.xsd">
     <data>
-        <collection id="usersDc"
-                    class="com.haulmont.cuba.security.entity.User"
-                    view="user.browse">
-            <loader id="usersLd">
-                <query>
-                    <![CDATA[select e from sec$User e]]>
-                </query>
-            </loader>
-        </collection>
-        <collection id="customersDc"
+        <collection id="customersSystemDc"
                     class="com.haulmont.cuba.web.testmodel.sales.Customer"
-                    view="customer-with-address">
+                    view="customer-with-systems">
             <loader id="customersLd">
                 <query><![CDATA[select e from test$Customer e]]></query>
             </loader>
         </collection>
+
         <collection id="goodsInfoDc"
                     class="com.haulmont.cuba.web.testmodel.sample.GoodInfo"/>
     </data>
 
     <layout spacing="true">
-        <groupTable id="usersTableView" width="100%" height="100%" dataContainer="usersDc">
-            <columns includeBy="view"/>
+        <groupTable id="usersTableAll" width="100%" height="100%" dataContainer="customersSystemDc">
+            <columns includeAll="true"/>
             <rows/>
         </groupTable>
 
-        <groupTable id="usersTableLocal" width="100%" height="100%" dataContainer="usersDc">
-            <columns includeBy="local"/>
+        <groupTable id="usersTableSystem" width="100%" height="100%" dataContainer="customersSystemDc">
+            <columns includeAll="true" includeSystem="true"/>
             <rows/>
         </groupTable>
 
-        <groupTable id="customersEmbTable" width="100%" height="100%" dataContainer="customersDc">
-            <columns includeBy="view">
+        <groupTable id="usersTableExclude" width="100%" height="100%" dataContainer="customersSystemDc">
+            <columns includeAll="true" includeSystem="true" exclude="createTs, address"/>
+            <rows/>
+        </groupTable>
+
+        <groupTable id="usersTableView" width="100%" height="100%" dataContainer="customersSystemDc">
+            <columns includeByView="customer-with-systems" includeSystem="true"/>
+            <rows/>
+        </groupTable>
+
+        <groupTable id="customersEmbTable" width="100%" height="100%" dataContainer="customersSystemDc">
+            <columns includeAll="true">
                 <column id="address.city"/>
                 <column id="address.zip"/>
             </columns>
             <rows/>
         </groupTable>
 
-        <groupTable id="customersTableGrouping" width="100%" height="100%" dataContainer="customersDc">
-            <columns includeBy="view">
+        <groupTable id="customersTableGrouping" width="100%" height="100%" dataContainer="customersSystemDc">
+            <columns includeByView="customer-with-systems">
                 <group>
                     <column id="address"/>
                 </group>
@@ -65,13 +67,8 @@
             <rows/>
         </groupTable>
 
-        <groupTable id="customersTableExcluding" width="100%" height="100%" dataContainer="customersDc">
-            <columns includeBy="view" exclude="address, name"/>
-            <rows/>
-        </groupTable>
-
         <groupTable id="goodsInfoTable" width="100%" height="100%" dataContainer="goodsInfoDc">
-            <columns includeBy="view" exclude="isFragile"/>
+            <columns includeAll="true" exclude="isFragile"/>
             <rows/>
         </groupTable>
     </layout>

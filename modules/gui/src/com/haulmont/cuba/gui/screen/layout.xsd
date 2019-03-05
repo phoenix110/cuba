@@ -1159,14 +1159,9 @@
     </xs:complexType>
 
     <xs:attributeGroup name="columnsLoadType">
-        <xs:attribute name="includeBy">
-            <xs:simpleType>
-                <xs:restriction id="types">
-                    <xs:enumeration value="view"/>
-                    <xs:enumeration value="local"/>
-                </xs:restriction>
-            </xs:simpleType>
-        </xs:attribute>
+        <xs:attribute name="includeByView" type="xs:string"/>
+        <xs:attribute name="includeAll" type="xs:boolean"/>
+        <xs:attribute name="includeSystem" type="xs:boolean"/>
         <xs:attribute name="exclude" type="xs:string"/>
     </xs:attributeGroup>
 

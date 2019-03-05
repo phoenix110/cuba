@@ -52,9 +52,59 @@ class GroupTableLoadColumnsByIncludeTest extends UiScreenSpec {
         windowConfig.initialized = false
     }
 
-    def "includeBy view"() {
+    def "load column by includeAll"() {
         def screens = vaadinUi.screens
+        def mainWindow = screens.create("mainWindow", OpenMode.ROOT)
+        screens.show(mainWindow)
 
+        def groupTableScreen = screens.create(GroupTableLoadColumnsByIncludeScreen)
+        groupTableScreen.show()
+
+        when:
+        def groupTable = groupTableScreen.getWindow().getComponentNN("usersTableAll") as GroupTable
+        def columnList = groupTable.getColumns()
+
+        then:
+        columnList.size() == 4
+    }
+
+    def "load column by includeAll and includeSystem"() {
+        def screens = vaadinUi.screens
+        def mainWindow = screens.create("mainWindow", OpenMode.ROOT)
+        screens.show(mainWindow)
+
+        def groupTableScreen = screens.create(GroupTableLoadColumnsByIncludeScreen)
+        groupTableScreen.show()
+
+        when:
+        def groupTable = groupTableScreen.getWindow().getComponentNN("usersTableSystem") as GroupTable
+        def columnList = groupTable.getColumns()
+
+        then:
+        columnList.size() == 12
+    }
+
+    def "exclude system and other properties"() {
+        def screens = vaadinUi.screens
+        def mainWindow = screens.create("mainWindow", OpenMode.ROOT)
+        screens.show(mainWindow)
+
+        def groupTableScreen = screens.create(GroupTableLoadColumnsByIncludeScreen)
+        groupTableScreen.show()
+
+        when:
+        def groupTable = groupTableScreen.getWindow().getComponentNN("usersTableExclude") as GroupTable
+        def columnList = groupTable.getColumns()
+
+        then:
+        columnList.size() == 10
+
+        groupTable.getColumn("address") == null
+        groupTable.getColumn("createTs") == null
+    }
+
+    def "load columns by view"() {
+        def screens = vaadinUi.screens
         def mainWindow = screens.create("mainWindow", OpenMode.ROOT)
         screens.show(mainWindow)
 
@@ -66,24 +116,7 @@ class GroupTableLoadColumnsByIncludeTest extends UiScreenSpec {
         def columnList = groupTable.getColumns()
 
         then:
-        columnList.size() == 17
-    }
-
-    def "includeBy local"() {
-        def screens = vaadinUi.screens
-
-        def mainWindow = screens.create("mainWindow", OpenMode.ROOT)
-        screens.show(mainWindow)
-
-        def groupTableScreen = screens.create(GroupTableLoadColumnsByIncludeScreen)
-        groupTableScreen.show()
-
-        when:
-        def groupTable = groupTableScreen.getWindow().getComponentNN("usersTableLocal") as GroupTable
-        def columnList = groupTable.getColumns()
-
-        then:
-        columnList.size() == 16
+        columnList.size() == 12
     }
 
     def "entity with embedded property"() {
@@ -144,25 +177,5 @@ class GroupTableLoadColumnsByIncludeTest extends UiScreenSpec {
         columnList.size() == 4
 
         groupTable.getColumn("isFragile") == null
-    }
-
-    def "exclude property"() {
-        def screens = vaadinUi.screens
-
-        def mainWindow = screens.create("mainWindow", OpenMode.ROOT)
-        screens.show(mainWindow)
-
-        def groupTableScreen = screens.create(GroupTableLoadColumnsByIncludeScreen)
-        groupTableScreen.show()
-
-        when:
-        def groupTable = groupTableScreen.getWindow().getComponentNN("customersTableExcluding") as GroupTable
-        def columnList = groupTable.getColumns()
-
-        then:
-        columnList.size() == 2
-
-        groupTable.getColumn("address") == null
-        groupTable.getColumn("name") == null
     }
 }

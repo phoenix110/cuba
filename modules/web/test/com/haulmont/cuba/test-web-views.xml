@@ -18,8 +18,9 @@
 <views xmlns="http://schemas.haulmont.com/cuba/view.xsd">
 
     <view class="com.haulmont.cuba.web.testmodel.sales.Customer"
-          name="customer-with-address"
-          extends="_local">
+          name="customer-with-systems"
+          extends="_local"
+          systemProperties="true">
         <property name="address" view="_local"/>
     </view>
 </views>

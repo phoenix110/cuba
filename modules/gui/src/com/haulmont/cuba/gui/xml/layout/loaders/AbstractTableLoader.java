@@ -310,16 +310,14 @@ public abstract class AbstractTableLoader<T extends Table> extends ActionsHolder
         }
     }
 
-    protected List<Table.Column> loadColumnsByInclude(String includeBy, Element columnsElement, MetaClass metaClass, View view) {
-        Collection<String> appliedProperties = Collections.emptyList();
+    protected List<Table.Column> loadColumnsByInclude(String viewName, Element columnsElement, MetaClass metaClass, View view) {
         View currentView = view;
-        if (includeBy.equals("view")) {
-            appliedProperties = getAppliedProperties(columnsElement, currentView, metaClass);
-        } else if (includeBy.equals("local")) {
+        if (viewName != null) {
             ViewRepository viewRepository = beanLocator.get(ViewRepository.NAME);
-            currentView = viewRepository.getView(metaClass, View.LOCAL);
-            appliedProperties = getAppliedProperties(columnsElement, currentView, metaClass);
+            currentView = viewRepository.getView(metaClass, viewName);
         }
+
+        Collection<String> appliedProperties = getAppliedProperties(columnsElement, currentView, metaClass);
 
         List<Table.Column> columns = new ArrayList<>(appliedProperties.size());
         List<Element> columnElements = columnsElement.elements("column");
@@ -369,9 +367,22 @@ public abstract class AbstractTableLoader<T extends Table> extends ActionsHolder
     }
 
     protected List<Table.Column> loadColumns(Table component, Element columnsElement, MetaClass metaClass, View view) {
-        String includeBy = columnsElement.attributeValue("includeBy");
-        if (StringUtils.isNotEmpty(includeBy)) {
-            return loadColumnsByInclude(includeBy, columnsElement, metaClass, view);
+        String includeByView = columnsElement.attributeValue("includeByView");
+        String includeAll = columnsElement.attributeValue("includeAll");
+
+        if (StringUtils.isNotBlank(includeByView) && StringUtils.isNotBlank(includeAll)) {
+            throw new GuiDevelopmentException("'includeByView' and 'includeAll' attributes cannot be defined simultaneously",
+                    getContext().getFullFrameId());
+        }
+
+        if (StringUtils.isNotBlank(includeByView)) {
+            return loadColumnsByInclude(includeByView, columnsElement, metaClass, view);
+        }
+
+        if (StringUtils.isNotBlank(includeAll)) {
+            if (Boolean.parseBoolean(includeAll)) {
+                return loadColumnsByInclude(null, columnsElement, metaClass, view);
+            }
         }
 
         List<Element> columnElements = columnsElement.elements("column");
@@ -683,6 +694,9 @@ public abstract class AbstractTableLoader<T extends Table> extends ActionsHolder
         final List<String> excludes = StringUtils.isEmpty(exclude) ? Collections.emptyList() :
                 Splitter.on(",").omitEmptyStrings().trimResults().splitToList(exclude);
 
+        String includeSystem = columnsElement.attributeValue("includeSystem");
+        boolean isIncludeSystem = StringUtils.isNotBlank(includeSystem) && Boolean.parseBoolean(includeSystem);
+
         MetadataTools metadataTools = getMetadataTools();
 
         Stream<String> properties;
@@ -694,7 +708,11 @@ public abstract class AbstractTableLoader<T extends Table> extends ActionsHolder
 
         List<String> appliedProperties = properties.filter(s -> {
             MetaProperty metaProperty = metaClass.getProperty(s);
-            return !metadataTools.isSystem(metaProperty) && !excludes.contains(s);
+            if (isIncludeSystem || !metadataTools.isSystem(metaProperty)) {
+                return !excludes.contains(s);
+            } else {
+                return false;
+            }
         }).collect(Collectors.toList());
 
         return appliedProperties;
