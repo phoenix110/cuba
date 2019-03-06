@@ -1146,35 +1146,6 @@ public class MetadataTools {
         }
     }
 
-    /**
-     * Check that view contains property path.
-     *
-     * @param view view
-     * @param path property path like car.repair.name
-     * @return true if view contains path
-     */
-    public boolean viewContainsPropertyPath(View view, String path) {
-        String[] properties = InstanceUtils.parseValuePath(path);
-        View currentView = view;
-        for (int i = 0; i < properties.length; i++) {
-            if (currentView == null) {
-                return false;
-            }
-
-            ViewProperty viewProperty = currentView.getProperty(properties[i]);
-            if (viewProperty == null) {
-                return false;
-            }
-
-            currentView = viewProperty.getView();
-            if (currentView == null && (i + 1 == properties.length)) {
-                return true;
-            }
-        }
-
-        return false;
-    }
-
     protected void internalTraverseAttributes(Entity entity, EntityAttributeVisitor visitor, HashSet<Object> visited) {
         if (visited.contains(entity))
             return;

@@ -350,11 +350,12 @@ public abstract class AbstractTableLoader<T extends Table> extends ActionsHolder
             // check property and add
             String propertyId = column.attributeValue("id");
             if (StringUtils.isNotEmpty(propertyId)) {
-                MetaPropertyPath metaPropertyPath = DynamicAttributesUtils.getMetaPropertyPath(metaClass, propertyId);
+                MetaPropertyPath dynamicAttributePath = DynamicAttributesUtils.getMetaPropertyPath(metaClass, propertyId);
 
-                if ((isPropertyPath(propertyId) && getMetadataTools().viewContainsPropertyPath(currentView, propertyId))
-                        || (!isPropertyPath(propertyId) && view.containsProperty(propertyId))
-                        || metaPropertyPath != null) {
+                MetaPropertyPath mpp = metaClass.getPropertyPath(propertyId);
+                boolean isViewContainsProperty = mpp != null && getMetadataTools().viewContainsProperty(currentView, mpp);
+
+                if (isViewContainsProperty || dynamicAttributePath != null) {
                     String visible = column.attributeValue("visible");
                     if (StringUtils.isEmpty(visible) || Boolean.parseBoolean(visible)) {
                         columns.add(loadColumn(column, metaClass));
@@ -716,11 +717,6 @@ public abstract class AbstractTableLoader<T extends Table> extends ActionsHolder
         }).collect(Collectors.toList());
 
         return appliedProperties;
-    }
-
-    protected boolean isPropertyPath(String property) {
-        String[] strings = InstanceUtils.parseValuePath(property);
-        return strings.length > 1;
     }
 
     @Nullable

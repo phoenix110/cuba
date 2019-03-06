@@ -22,7 +22,7 @@ import com.haulmont.cuba.core.entity.BaseUuidEntity;
 
 import java.util.Date;
 
-@MetaClass(name = "test$GoodInfo")
+@MetaClass(name = "test_GoodInfo")
 public class GoodInfo extends BaseUuidEntity {
 
     @MetaProperty

@@ -357,11 +357,12 @@ public abstract class AbstractDataGridLoader<T extends DataGrid> extends Actions
             // check property and add
             String propertyId = column.attributeValue("property");
             if (StringUtils.isNotEmpty(propertyId)) {
-                MetaPropertyPath metaPropertyPath = DynamicAttributesUtils.getMetaPropertyPath(metaClass, propertyId);
+                MetaPropertyPath dynamicAttributePath = DynamicAttributesUtils.getMetaPropertyPath(metaClass, propertyId);
 
-                if ((isPropertyPath(propertyId) && getMetadataTools().viewContainsPropertyPath(currentView, propertyId))
-                        || (!isPropertyPath(propertyId) && view.containsProperty(propertyId))
-                        || metaPropertyPath != null) {
+                MetaPropertyPath mpp = metaClass.getPropertyPath(propertyId);
+                boolean isViewContainsProperty = mpp != null && getMetadataTools().viewContainsProperty(currentView, mpp);
+
+                if (isViewContainsProperty || dynamicAttributePath != null) {
                     columns.add(loadColumn(component, column, metaClass));
                 }
             }
@@ -628,11 +629,6 @@ public abstract class AbstractDataGridLoader<T extends DataGrid> extends Actions
         }).collect(Collectors.toList());
 
         return appliedProperties;
-    }
-
-    protected boolean isPropertyPath(String property) {
-        String[] strings = InstanceUtils.parseValuePath(property);
-        return strings.length > 1;
     }
 
     @Nullable
