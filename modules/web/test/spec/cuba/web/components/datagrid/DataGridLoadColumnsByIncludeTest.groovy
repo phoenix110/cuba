@@ -52,38 +52,72 @@ class DataGridLoadColumnsByIncludeTest extends UiScreenSpec {
         windowConfig.initialized = false
     }
 
-    def "includeBy view"() {
+    def "load column by includeAll"() {
         def screens = vaadinUi.screens
 
         def mainWindow = screens.create("mainWindow", OpenMode.ROOT)
         screens.show(mainWindow)
 
-        def dataGridTableScreen = screens.create(DataGridLoadColumnsByIncludeScreen)
-        dataGridTableScreen.show()
+        def dataGridScreen = screens.create(DataGridLoadColumnsByIncludeScreen)
+        dataGridScreen.show()
 
         when:
-        def dataGrid = dataGridTableScreen.getWindow().getComponentNN("usersDataGridView") as DataGrid
+        def dataGrid = dataGridScreen.getWindow().getComponentNN("dataGridAll") as DataGrid
         def columnList = dataGrid.getColumns()
 
         then:
-        columnList.size() == 17
+        columnList.size() == 4
     }
 
-    def "includeBy local"() {
+    def "load column by includeAll and includeSystem"() {
         def screens = vaadinUi.screens
-
         def mainWindow = screens.create("mainWindow", OpenMode.ROOT)
         screens.show(mainWindow)
 
-        def dataGridTableScreen = screens.create(DataGridLoadColumnsByIncludeScreen)
-        dataGridTableScreen.show()
+        def dataGridScreen = screens.create(DataGridLoadColumnsByIncludeScreen)
+        dataGridScreen.show()
 
         when:
-        def dataGrid = dataGridTableScreen.getWindow().getComponentNN("usersDataGridLocal") as DataGrid
+        def dataGrid = dataGridScreen.getWindow().getComponentNN("dataGridSystem") as DataGrid
         def columnList = dataGrid.getColumns()
 
         then:
-        columnList.size() == 16
+        columnList.size() == 12
+    }
+
+    def "exclude system and other properties"() {
+        def screens = vaadinUi.screens
+        def mainWindow = screens.create("mainWindow", OpenMode.ROOT)
+        screens.show(mainWindow)
+
+        def dataGridScreen = screens.create(DataGridLoadColumnsByIncludeScreen)
+        dataGridScreen.show()
+
+        when:
+        def dataGrid = dataGridScreen.getWindow().getComponentNN("dataGridExclude") as DataGrid
+        def columnList = dataGrid.getColumns()
+
+        then:
+        columnList.size() == 10
+
+        dataGrid.getColumn("address") == null
+        dataGrid.getColumn("createTs") == null
+    }
+
+    def "load columns by view"() {
+        def screens = vaadinUi.screens
+        def mainWindow = screens.create("mainWindow", OpenMode.ROOT)
+        screens.show(mainWindow)
+
+        def dataGridScreen = screens.create(DataGridLoadColumnsByIncludeScreen)
+        dataGridScreen.show()
+
+        when:
+        def dataGrid = dataGridScreen.getWindow().getComponentNN("dataGridView") as DataGrid
+        def columnList = dataGrid.getColumns()
+
+        then:
+        columnList.size() == 4
     }
 
     def "entity with embedded property"() {
@@ -92,11 +126,11 @@ class DataGridLoadColumnsByIncludeTest extends UiScreenSpec {
         def mainWindow = screens.create("mainWindow", OpenMode.ROOT)
         screens.show(mainWindow)
 
-        def dataGridTableScreen = screens.create(DataGridLoadColumnsByIncludeScreen)
-        dataGridTableScreen.show()
+        def dataGridScreen = screens.create(DataGridLoadColumnsByIncludeScreen)
+        dataGridScreen.show()
 
         when:
-        def dataGrid = dataGridTableScreen.getWindow().getComponentNN("customersEmbDataGrid") as DataGrid
+        def dataGrid = dataGridScreen.getWindow().getComponentNN("dataGridEmb") as DataGrid
         def columnList = dataGrid.getColumns()
 
         then:
@@ -107,17 +141,17 @@ class DataGridLoadColumnsByIncludeTest extends UiScreenSpec {
         dataGrid.getColumn("address") != null
     }
 
-    def "override columns"() {
+    def "grouping and overriding columns"() {
         def screens = vaadinUi.screens
 
         def mainWindow = screens.create("mainWindow", OpenMode.ROOT)
         screens.show(mainWindow)
 
-        def dataGridTableScreen = screens.create(DataGridLoadColumnsByIncludeScreen)
-        dataGridTableScreen.show()
+        def groupTableScreen = screens.create(DataGridLoadColumnsByIncludeScreen)
+        groupTableScreen.show()
 
         when:
-        def dataGrid = dataGridTableScreen.getWindow().getComponentNN("customersDataGridOverriding") as DataGrid
+        def dataGrid = groupTableScreen.getWindow().getComponentNN("dataGridOverriding") as DataGrid
         def columnList = dataGrid.getColumns()
 
         then:
@@ -136,32 +170,12 @@ class DataGridLoadColumnsByIncludeTest extends UiScreenSpec {
         dataGridTableScreen.show()
 
         when:
-        def dataGrid = dataGridTableScreen.getWindow().getComponentNN("goodsInfoTable") as DataGrid
+        def dataGrid = dataGridTableScreen.getWindow().getComponentNN("dataGridNonPersist") as DataGrid
         def columnList = dataGrid.getColumns()
 
         then:
         columnList.size() == 4
 
         dataGrid.getColumn("isFragile") == null
-    }
-
-    def "exclude property"() {
-        def screens = vaadinUi.screens
-
-        def mainWindow = screens.create("mainWindow", OpenMode.ROOT)
-        screens.show(mainWindow)
-
-        def dataGridTableScreen = screens.create(DataGridLoadColumnsByIncludeScreen)
-        dataGridTableScreen.show()
-
-        when:
-        def dataGrid = dataGridTableScreen.getWindow().getComponentNN("customersTableExcluding") as DataGrid
-        def columnList = dataGrid.getColumns()
-
-        then:
-        columnList.size() == 2
-
-        dataGrid.getColumn("address") == null
-        dataGrid.getColumn("name") == null
     }
 }

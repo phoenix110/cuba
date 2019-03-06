@@ -61,7 +61,7 @@ class GroupTableLoadColumnsByIncludeTest extends UiScreenSpec {
         groupTableScreen.show()
 
         when:
-        def groupTable = groupTableScreen.getWindow().getComponentNN("usersTableAll") as GroupTable
+        def groupTable = groupTableScreen.getWindow().getComponentNN("groupTableAll") as GroupTable
         def columnList = groupTable.getColumns()
 
         then:
@@ -77,7 +77,7 @@ class GroupTableLoadColumnsByIncludeTest extends UiScreenSpec {
         groupTableScreen.show()
 
         when:
-        def groupTable = groupTableScreen.getWindow().getComponentNN("usersTableSystem") as GroupTable
+        def groupTable = groupTableScreen.getWindow().getComponentNN("groupTableSystem") as GroupTable
         def columnList = groupTable.getColumns()
 
         then:
@@ -93,7 +93,7 @@ class GroupTableLoadColumnsByIncludeTest extends UiScreenSpec {
         groupTableScreen.show()
 
         when:
-        def groupTable = groupTableScreen.getWindow().getComponentNN("usersTableExclude") as GroupTable
+        def groupTable = groupTableScreen.getWindow().getComponentNN("groupTableExclude") as GroupTable
         def columnList = groupTable.getColumns()
 
         then:
@@ -112,11 +112,11 @@ class GroupTableLoadColumnsByIncludeTest extends UiScreenSpec {
         groupTableScreen.show()
 
         when:
-        def groupTable = groupTableScreen.getWindow().getComponentNN("usersTableView") as GroupTable
+        def groupTable = groupTableScreen.getWindow().getComponentNN("groupTableView") as GroupTable
         def columnList = groupTable.getColumns()
 
         then:
-        columnList.size() == 12
+        columnList.size() == 4
     }
 
     def "entity with embedded property"() {
@@ -129,7 +129,7 @@ class GroupTableLoadColumnsByIncludeTest extends UiScreenSpec {
         groupTableScreen.show()
 
         when:
-        def groupTable = groupTableScreen.getWindow().getComponentNN("customersEmbTable") as GroupTable
+        def groupTable = groupTableScreen.getWindow().getComponentNN("groupTableEmb") as GroupTable
         def columnList = groupTable.getColumns()
 
         then:
@@ -150,7 +150,7 @@ class GroupTableLoadColumnsByIncludeTest extends UiScreenSpec {
         groupTableScreen.show()
 
         when:
-        def groupTable = groupTableScreen.getWindow().getComponentNN("customersTableGrouping") as GroupTable
+        def groupTable = groupTableScreen.getWindow().getComponentNN("groupTableGrouping") as GroupTable
         def columnList = groupTable.getColumns()
 
         then:
@@ -170,7 +170,7 @@ class GroupTableLoadColumnsByIncludeTest extends UiScreenSpec {
         groupTableScreen.show()
 
         when:
-        def groupTable = groupTableScreen.getWindow().getComponentNN("goodsInfoTable") as GroupTable
+        def groupTable = groupTableScreen.getWindow().getComponentNN("groupTableNonPersist") as GroupTable
         def columnList = groupTable.getColumns()
 
         then:

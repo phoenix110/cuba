@@ -29,27 +29,27 @@
     </data>
 
     <layout spacing="true">
-        <groupTable id="usersTableAll" width="100%" height="100%" dataContainer="customersSystemDc">
+        <groupTable id="groupTableAll" width="100%" height="100%" dataContainer="customersSystemDc">
             <columns includeAll="true"/>
             <rows/>
         </groupTable>
 
-        <groupTable id="usersTableSystem" width="100%" height="100%" dataContainer="customersSystemDc">
+        <groupTable id="groupTableSystem" width="100%" height="100%" dataContainer="customersSystemDc">
             <columns includeAll="true" includeSystem="true"/>
             <rows/>
         </groupTable>
 
-        <groupTable id="usersTableExclude" width="100%" height="100%" dataContainer="customersSystemDc">
+        <groupTable id="groupTableExclude" width="100%" height="100%" dataContainer="customersSystemDc">
             <columns includeAll="true" includeSystem="true" exclude="createTs, address"/>
             <rows/>
         </groupTable>
 
-        <groupTable id="usersTableView" width="100%" height="100%" dataContainer="customersSystemDc">
-            <columns includeByView="customer-with-systems" includeSystem="true"/>
+        <groupTable id="groupTableView" width="100%" height="100%" dataContainer="customersSystemDc">
+            <columns includeByView="customer-without-systems" includeSystem="true"/>
             <rows/>
         </groupTable>
 
-        <groupTable id="customersEmbTable" width="100%" height="100%" dataContainer="customersSystemDc">
+        <groupTable id="groupTableEmb" width="100%" height="100%" dataContainer="customersSystemDc">
             <columns includeAll="true">
                 <column id="address.city"/>
                 <column id="address.zip"/>
@@ -57,7 +57,7 @@
             <rows/>
         </groupTable>
 
-        <groupTable id="customersTableGrouping" width="100%" height="100%" dataContainer="customersSystemDc">
+        <groupTable id="groupTableGrouping" width="100%" height="100%" dataContainer="customersSystemDc">
             <columns includeByView="customer-with-systems">
                 <group>
                     <column id="address"/>
@@ -67,7 +67,7 @@
             <rows/>
         </groupTable>
 
-        <groupTable id="goodsInfoTable" width="100%" height="100%" dataContainer="goodsInfoDc">
+        <groupTable id="groupTableNonPersist" width="100%" height="100%" dataContainer="goodsInfoDc">
             <columns includeAll="true" exclude="isFragile"/>
             <rows/>
         </groupTable>
