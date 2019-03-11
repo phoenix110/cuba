@@ -75,6 +75,19 @@ public class WebCurrencyField<V extends Number> extends WebV8AbstractField<CubaC
                         componentValueChanged(event.getOldValue(), event.getValue(), event.isUserOriginated()));
     }
 
+    @Override
+    protected void componentValueChanged(String prevComponentValue, String newComponentValue, boolean isUserOriginated) {
+        ValueSource valueSource = getValueSource();
+        if (valueSource instanceof EntityValueSource) {
+            Datatype datatype = ((EntityValueSource) valueSource).getMetaPropertyPath().getRange().asDatatype();
+            if (!Number.class.isAssignableFrom(datatype.getJavaClass())) {
+                throw new IllegalArgumentException("CurrencyField doesn't support Datatype with class: " + datatype.getJavaClass());
+            }
+        }
+
+        super.componentValueChanged(prevComponentValue, newComponentValue, isUserOriginated);
+    }
+
     @Inject
     public void setUserSessionSource(UserSessionSource userSessionSource) {
         this.locale = userSessionSource.getLocale();
@@ -227,6 +240,9 @@ public class WebCurrencyField<V extends Number> extends WebV8AbstractField<CubaC
     public void setDatatype(Datatype<V> datatype) {
         Preconditions.checkNotNullArgument(datatype);
         dataAwareComponentsTools.checkValueSourceDatatypeMismatch(datatype, getValueSource());
+        if (!Number.class.isAssignableFrom(datatype.getJavaClass())) {
+            throw new IllegalArgumentException("CurrencyField doesn't support Datatype with class: " + datatype.getJavaClass());
+        }
 
         this.datatype = datatype;
     }
