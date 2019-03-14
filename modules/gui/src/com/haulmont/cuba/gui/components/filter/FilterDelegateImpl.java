@@ -19,9 +19,7 @@ package com.haulmont.cuba.gui.components.filter;
 
 import com.google.common.base.Splitter;
 import com.google.common.base.Strings;
-import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
-import com.google.common.collect.Streams;
 import com.haulmont.bali.datastruct.Node;
 import com.haulmont.bali.util.Dom4j;
 import com.haulmont.bali.util.ParamsMap;
@@ -61,6 +59,7 @@ import com.haulmont.cuba.gui.data.HierarchicalDatasource;
 import com.haulmont.cuba.gui.model.CollectionContainer;
 import com.haulmont.cuba.gui.model.CollectionLoader;
 import com.haulmont.cuba.gui.presentations.Presentations;
+import com.haulmont.cuba.gui.screen.OpenMode;
 import com.haulmont.cuba.gui.settings.SettingsImpl;
 import com.haulmont.cuba.gui.theme.ThemeConstants;
 import com.haulmont.cuba.gui.theme.ThemeConstantsManager;
@@ -122,6 +121,7 @@ public class FilterDelegateImpl implements FilterDelegate {
     protected FilterParser filterParser;
     @Inject
     protected MaxResultsFieldHelper maxResultsFieldHelper;
+    protected ScreenBuilders screenBuilders;
 
     @Inject
     protected DataService dataService;
@@ -224,6 +224,11 @@ public class FilterDelegateImpl implements FilterDelegate {
         NONE,
         FIRST,
         LAST
+    }
+
+    @Inject
+    public void setScreenBuilders(ScreenBuilders screenBuilders) {
+        this.screenBuilders = screenBuilders;
     }
 
     @PostConstruct
@@ -2677,26 +2682,19 @@ public class FilterDelegateImpl implements FilterDelegate {
                 return;
             }
 
-            Frame frame = filter.getFrame();
-            String[] strings = ValuePathHelper.parse(ComponentsHelper.getFilterComponentPath(filter));
-            String windowAlias = strings[0];
-            StringBuilder lookupAlias = new StringBuilder(windowAlias);
-            if (windowAlias.endsWith(Window.BROWSE_WINDOW_SUFFIX)) {
-                int index = lookupAlias.lastIndexOf(Window.BROWSE_WINDOW_SUFFIX);
-                lookupAlias.delete(index, lookupAlias.length());
-                lookupAlias.append(Window.LOOKUP_WINDOW_SUFFIX);
-            }
+            MetaClass metaClass = dataLoader == null ?
+                    datasource.getMetaClass() : dataLoader.getContainer().getEntityMetaClass();
 
-            WindowManager wm = (WindowManager) ComponentsHelper.getScreenContext(frame).getScreens();
-            WindowInfo windowInfo = AppBeans.get(WindowConfig.class).getWindowInfo(lookupAlias.toString());
-
-            wm.openLookup(windowInfo, items -> {
-                String filterXml = filterEntity.getXml();
-                filterEntity.setXml(UserSetHelper.addEntities(filterXml, items));
-                filterEntity.getFolder().setFilterXml(filterEntity.getXml());
-                filterEntity.setFolder(saveFolder(filterEntity.getFolder()));
-                setFilterEntity(filterEntity);
-            }, OpenType.THIS_TAB);
+            screenBuilders.lookup(metaClass.getJavaClass(), filter.getFrame().getFrameOwner())
+                    .withSelectHandler(entities -> {
+                        String filterXml = filterEntity.getXml();
+                        filterEntity.setXml(UserSetHelper.addEntities(filterXml, entities));
+                        filterEntity.getFolder().setFilterXml(filterEntity.getXml());
+                        filterEntity.setFolder(saveFolder(filterEntity.getFolder()));
+                        setFilterEntity(filterEntity);
+                    })
+                    .withOpenMode(OpenMode.THIS_TAB)
+                    .show();
         }
     }
 
