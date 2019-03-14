@@ -89,7 +89,6 @@ public class ContainerGroupTableItems<E extends Entity<K>, K>
                 super.sort(sortProperties, sortAscending);
             }
         }
-
     }
 
     protected void doGroup() {
