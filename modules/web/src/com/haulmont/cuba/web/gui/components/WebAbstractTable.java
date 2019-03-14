@@ -2885,6 +2885,20 @@ public abstract class WebAbstractTable<T extends com.vaadin.v7.ui.Table & CubaEn
         component.setSelectable(showSelection);
     }
 
+    @Override
+    public void setColumnExpandRatio(Column column, float ratio) {
+        checkNotNullArgument(column, "Column must be non null");
+
+        component.setColumnExpandRatio(column.getId(), ratio);
+    }
+
+    @Override
+    public float getColumnExpandRatio(Column column) {
+        checkNotNullArgument(column, "Column must be non null");
+
+        return component.getColumnExpandRatio(column.getId());
+    }
+
     protected String generateCellStyle(Object itemId, Object propertyId) {
         String style = null;
         if (propertyId != null && itemId != null

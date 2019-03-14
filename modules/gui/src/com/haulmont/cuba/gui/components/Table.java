@@ -1127,6 +1127,25 @@ public interface Table<E extends Entity>
         public void removeAggregationProperty() {
             ((ColumnManager) owner).removeAggregationProperty(getStringId());
         }
+
+        /**
+         * Sets expand ration for the given column.
+         *
+         * @param ratio ratio
+         */
+        public void setExpandRatio(float ratio) {
+            if (owner != null) {
+                ((ColumnManager) owner).setColumnExpandRatio(this, ratio);
+            }
+        }
+
+        /**
+         * @return expand ratio for the column
+         */
+        public float getExpandRatio() {
+            return owner != null ?
+                    ((ColumnManager) owner).getColumnExpandRatio(this) : -1;
+        }
     }
 
     /**
