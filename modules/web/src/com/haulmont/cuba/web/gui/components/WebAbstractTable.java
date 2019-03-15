@@ -474,6 +474,10 @@ public abstract class WebAbstractTable<T extends com.vaadin.v7.ui.Table & CubaEn
 
         component.setColumnCaptionAsHtml(columnId, column.getCaptionAsHtml());
 
+        if (column.getExpandRatio() != null) {
+            component.setColumnExpandRatio(columnId, column.getExpandRatio());
+        }
+
         column.setOwner(this);
 
         MetaPropertyPath propertyPath = column.getBoundProperty();

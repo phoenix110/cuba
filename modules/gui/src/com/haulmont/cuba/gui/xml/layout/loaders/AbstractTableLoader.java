@@ -567,6 +567,11 @@ public abstract class AbstractTableLoader<T extends Table> extends ActionsHolder
             setColumnType(column, type);
         }
 
+        String expandRatio = element.attributeValue("expandRatio");
+        if (StringUtils.isNotEmpty(expandRatio)) {
+            column.setExpandRatio(Float.parseFloat(expandRatio));
+        }
+
         column.setFormatter(loadFormatter(element));
 
         loadAggregation(column, element);

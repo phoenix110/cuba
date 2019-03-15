@@ -792,6 +792,7 @@ public interface Table<E extends Entity>
         protected Integer maxTextLength;
         protected ColumnAlignment alignment;
         protected boolean captionAsHtml;
+        protected Float expandRatio;
 
         protected Function<T, Object> valueProvider;
 
@@ -1133,8 +1134,9 @@ public interface Table<E extends Entity>
          *
          * @param ratio ratio
          */
-        public void setExpandRatio(float ratio) {
-            if (owner != null) {
+        public void setExpandRatio(Float ratio) {
+            this.expandRatio = ratio;
+            if (ratio != null && owner != null) {
                 ((ColumnManager) owner).setColumnExpandRatio(this, ratio);
             }
         }
@@ -1142,9 +1144,8 @@ public interface Table<E extends Entity>
         /**
          * @return expand ratio for the column
          */
-        public float getExpandRatio() {
-            return owner != null ?
-                    ((ColumnManager) owner).getColumnExpandRatio(this) : -1;
+        public Float getExpandRatio() {
+            return expandRatio;
         }
     }
 
