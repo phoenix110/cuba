@@ -2693,7 +2693,6 @@ public class FilterDelegateImpl implements FilterDelegate {
                         filterEntity.setFolder(saveFolder(filterEntity.getFolder()));
                         setFilterEntity(filterEntity);
                     })
-                    .withOpenMode(OpenMode.THIS_TAB)
                     .show();
         }
     }
