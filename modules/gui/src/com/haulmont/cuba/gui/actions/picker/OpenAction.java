@@ -40,7 +40,7 @@ import org.springframework.beans.factory.InitializingBean;
 import javax.inject.Inject;
 
 @ActionType(OpenAction.ID)
-public class OpenAction extends BaseAction implements PickerField.PickerFieldAction, InitializingBean {
+public class OpenAction extends BaseAction implements PickerField.PickerFieldAction, HasDefaultDescription, InitializingBean {
 
     public static final String ID = "picker_open";
 
@@ -48,8 +48,12 @@ public class OpenAction extends BaseAction implements PickerField.PickerFieldAct
     protected Icons icons;
 
     protected Messages messages;
+    protected Configuration configuration;
+
     @Inject
     protected ScreenBuilders screenBuilders;
+
+    protected String defaultDescription;
 
     protected boolean editable = true;
 
@@ -63,18 +67,18 @@ public class OpenAction extends BaseAction implements PickerField.PickerFieldAct
 
     @Inject
     protected void setConfiguration(Configuration configuration) {
-        ClientConfig clientConfig = configuration.getConfig(ClientConfig.class);
-        setShortcut(clientConfig.getPickerOpenShortcut());
+        this.configuration = configuration;
     }
 
     @Override
     public void afterPropertiesSet() throws Exception {
-        String tooltip = messages.getMainMessage("pickerField.action.open.tooltip");
-        if (getShortcutCombination() != null) {
-            setDescription(tooltip + " (" + getShortcutCombination().format() + ")");
-        } else {
-            setDescription(tooltip);
-        }
+        defaultDescription = messages.getMainMessage("pickerField.action.open.tooltip");
+        setShortcut(configuration.getConfig(ClientConfig.class).getPickerOpenShortcut());
+    }
+
+    @Override
+    public String getDefaultDescription() {
+        return defaultDescription;
     }
 
     @SuppressWarnings("unchecked")

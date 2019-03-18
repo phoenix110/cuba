@@ -25,6 +25,7 @@ import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.Configuration;
 import com.haulmont.cuba.core.global.Metadata;
 import com.haulmont.cuba.core.global.MetadataTools;
+import com.haulmont.cuba.gui.actions.picker.HasDefaultDescription;
 import com.haulmont.cuba.gui.components.Action;
 import com.haulmont.cuba.gui.components.KeyCombination;
 import com.haulmont.cuba.gui.components.PickerField;
@@ -240,7 +241,15 @@ public class WebPickerField<V extends Entity> extends WebV8AbstractField<CubaPic
         String description = action.getDescription();
         if (description == null && action.getShortcutCombination() != null) {
             description = action.getShortcutCombination().format();
+
+            if (action instanceof HasDefaultDescription) {
+                String defaultDescription = ((HasDefaultDescription) action).getDefaultDescription();
+                if (StringUtils.isNotEmpty(defaultDescription)) {
+                    description = defaultDescription + " (" + action.getShortcutCombination().format() + ")";
+                }
+            }
         }
+
         if (description != null) {
             button.setDescription(description);
         }
