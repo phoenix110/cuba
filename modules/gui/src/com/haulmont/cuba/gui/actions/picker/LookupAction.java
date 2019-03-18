@@ -20,6 +20,7 @@ import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.cuba.client.ClientConfig;
 import com.haulmont.cuba.core.global.Configuration;
 import com.haulmont.cuba.core.global.DevelopmentException;
+import com.haulmont.cuba.core.global.Messages;
 import com.haulmont.cuba.gui.ScreenBuilders;
 import com.haulmont.cuba.gui.components.ActionType;
 import com.haulmont.cuba.gui.components.Component;
@@ -28,11 +29,12 @@ import com.haulmont.cuba.gui.components.actions.BaseAction;
 import com.haulmont.cuba.gui.icons.CubaIcon;
 import com.haulmont.cuba.gui.icons.Icons;
 import com.haulmont.cuba.gui.screen.Screen;
+import org.springframework.beans.factory.InitializingBean;
 
 import javax.inject.Inject;
 
 @ActionType(LookupAction.ID)
-public class LookupAction extends BaseAction implements PickerField.PickerFieldAction {
+public class LookupAction extends BaseAction implements PickerField.PickerFieldAction, InitializingBean {
 
     public static final String ID = "picker_lookup";
 
@@ -41,6 +43,7 @@ public class LookupAction extends BaseAction implements PickerField.PickerFieldA
     @Inject
     protected ScreenBuilders screenBuilders;
     protected Icons icons;
+    protected Messages messages;
 
     protected boolean editable = true;
 
@@ -88,9 +91,24 @@ public class LookupAction extends BaseAction implements PickerField.PickerFieldA
     }
 
     @Inject
+    protected void setMessages(Messages messages) {
+        this.messages = messages;
+    }
+
+    @Inject
     protected void setConfiguration(Configuration configuration) {
         ClientConfig clientConfig = configuration.getConfig(ClientConfig.class);
         setShortcut(clientConfig.getPickerLookupShortcut());
+    }
+
+    @Override
+    public void afterPropertiesSet() throws Exception {
+        String tooltip = messages.getMainMessage("pickerField.action.lookup.tooltip");
+        if (getShortcutCombination() != null) {
+            setDescription(tooltip + " (" + getShortcutCombination().format() + ")");
+        } else {
+            setDescription(tooltip);
+        }
     }
 
     @SuppressWarnings("unchecked")

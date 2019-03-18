@@ -17,8 +17,10 @@
 package com.haulmont.cuba.gui.actions.picker;
 
 import com.haulmont.chile.core.model.MetaClass;
+import com.haulmont.cuba.client.ClientConfig;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.entity.SoftDelete;
+import com.haulmont.cuba.core.global.Configuration;
 import com.haulmont.cuba.core.global.DevelopmentException;
 import com.haulmont.cuba.core.global.Messages;
 import com.haulmont.cuba.gui.ComponentsHelper;
@@ -33,11 +35,12 @@ import com.haulmont.cuba.gui.icons.CubaIcon;
 import com.haulmont.cuba.gui.icons.Icons;
 import com.haulmont.cuba.gui.screen.Screen;
 import com.haulmont.cuba.gui.screen.ScreenContext;
+import org.springframework.beans.factory.InitializingBean;
 
 import javax.inject.Inject;
 
 @ActionType(OpenAction.ID)
-public class OpenAction extends BaseAction implements PickerField.PickerFieldAction {
+public class OpenAction extends BaseAction implements PickerField.PickerFieldAction, InitializingBean {
 
     public static final String ID = "picker_open";
 
@@ -56,6 +59,22 @@ public class OpenAction extends BaseAction implements PickerField.PickerFieldAct
 
     public OpenAction(String id) {
         super(id);
+    }
+
+    @Inject
+    protected void setConfiguration(Configuration configuration) {
+        ClientConfig clientConfig = configuration.getConfig(ClientConfig.class);
+        setShortcut(clientConfig.getPickerOpenShortcut());
+    }
+
+    @Override
+    public void afterPropertiesSet() throws Exception {
+        String tooltip = messages.getMainMessage("pickerField.action.open.tooltip");
+        if (getShortcutCombination() != null) {
+            setDescription(tooltip + " (" + getShortcutCombination().format() + ")");
+        } else {
+            setDescription(tooltip);
+        }
     }
 
     @SuppressWarnings("unchecked")
