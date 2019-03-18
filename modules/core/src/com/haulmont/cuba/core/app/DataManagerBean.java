@@ -21,15 +21,16 @@ import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.MetaProperty;
 import com.haulmont.cuba.core.entity.*;
 import com.haulmont.cuba.core.global.*;
+import com.haulmont.cuba.core.global.validation.EntityValidationException;
 import com.haulmont.cuba.security.app.EntityLogAPI;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.config.BeanDefinition;
-import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.Nullable;
 import javax.inject.Inject;
+import javax.validation.ConstraintViolation;
+import javax.validation.Validator;
 import java.util.*;
 
 @Component(DataManager.NAME)
@@ -54,6 +55,9 @@ public class DataManagerBean implements DataManager {
 
     @Inject
     protected EntityLogAPI entityLog;
+
+    @Inject
+    protected BeanValidation beanValidation;
 
     @Nullable
     @Override
@@ -116,9 +120,21 @@ public class DataManagerBean implements DataManager {
         return reloaded;
     }
 
+    protected void validateEntity(Entity entity) {
+        Validator validator = beanValidation.getValidator();
+        Set<ConstraintViolation<Entity>> violations = (validator.validate(entity));
+        if (!violations.isEmpty())
+            throw new EntityValidationException("Entity " + entity.toString() + " validation failed.", violations);
+    }
+
     @Override
     @SuppressWarnings("unchecked")
     public EntitySet commit(CommitContext context) {
+        if ((CommitContext.ValidationType.DEFAULT == context.getValidationType() && serverConfig.getDataManagerBeanValidation())
+                || CommitContext.ValidationType.ALWAYS_VALIDATE == context.getValidationType()) {
+            context.getCommitInstances().forEach(this::validateEntity);
+        }
+
         Map<String, CommitContext> storeToContextMap = new TreeMap<>();
         Set<Entity> toRepeat = new HashSet<>();
         for (Entity entity : context.getCommitInstances()) {
@@ -250,6 +266,7 @@ public class DataManagerBean implements DataManager {
         newCtx.setDiscardCommitted(context.isDiscardCommitted());
         newCtx.setAuthorizationRequired(context.isAuthorizationRequired());
         newCtx.setJoinTransaction(context.isJoinTransaction());
+        newCtx.setValidationType(context.getValidationType());
         return newCtx;
     }
 

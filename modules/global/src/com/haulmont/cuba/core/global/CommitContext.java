@@ -40,6 +40,7 @@ public class CommitContext implements Serializable {
     protected boolean discardCommitted;
     protected boolean authorizationRequired;
     protected boolean joinTransaction;
+    protected ValidationType validationType = ValidationType.DEFAULT;
     protected Map<String, Object> dbHints = new HashMap<>();
 
     /**
@@ -191,6 +192,20 @@ public class CommitContext implements Serializable {
         this.discardCommitted = discardCommitted;
     }
 
+    /**
+     * @return {@code ValidationType}
+     */
+    public ValidationType getValidationType() {
+        return validationType;
+    }
+
+    /**
+     * @param validationType {@code ValidationType}
+     */
+    public void setValidationType(ValidationType validationType) {
+        this.validationType = validationType;
+    }
+
     public boolean isAuthorizationRequired() {
         return authorizationRequired;
     }
@@ -212,5 +227,17 @@ public class CommitContext implements Serializable {
     private View getViewFromRepository(Entity entity, String viewName) {
         Metadata metadata = AppBeans.get(Metadata.NAME);
         return metadata.getViewRepository().getView(metadata.getClass(entity.getClass()), viewName);
+    }
+
+    /**
+     * Validation type. Responsible for entity bean validation on {@link DataManager} level.
+     */
+    public enum ValidationType {
+        /** Use value from {@code cuba.dataManagerBeanValidation} application property */
+        DEFAULT,
+        /** Always perform validation */
+        ALWAYS_VALIDATE,
+        /** Never perform validation */
+        NEVER_VALIDATE
     }
 }
