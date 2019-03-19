@@ -16,6 +16,7 @@
  */
 package com.haulmont.chile.core.model.utils;
 
+import com.google.common.collect.ImmutableMap;
 import org.apache.commons.lang3.StringUtils;
 
 import java.lang.invoke.*;
@@ -31,19 +32,16 @@ public class MethodsCache {
     private final Map<String, BiConsumer> setters = new HashMap<>();
     private String className;
 
-    private static final Map<Class, Class> primitivesToObjects;
-
-    static {
-        primitivesToObjects = new HashMap<>();
-        primitivesToObjects.put(byte.class, Byte.class);
-        primitivesToObjects.put(char.class, Character.class);
-        primitivesToObjects.put(short.class, Short.class);
-        primitivesToObjects.put(int.class, Integer.class);
-        primitivesToObjects.put(long.class, Long.class);
-        primitivesToObjects.put(float.class, Float.class);
-        primitivesToObjects.put(double.class, Double.class);
-        primitivesToObjects.put(boolean.class, Boolean.class);
-    }
+    private static final Map<Class, Class> primitivesToObjects = new ImmutableMap.Builder<Class, Class>()
+            .put(byte.class, Byte.class)
+            .put(char.class, Character.class)
+            .put(short.class, Short.class)
+            .put(int.class, Integer.class)
+            .put(long.class, Long.class)
+            .put(float.class, Float.class)
+            .put(double.class, Double.class)
+            .put(boolean.class, Boolean.class)
+            .build();
 
 
     public MethodsCache(Class clazz) {
