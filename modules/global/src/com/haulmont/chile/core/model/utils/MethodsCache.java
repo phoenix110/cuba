@@ -31,6 +31,21 @@ public class MethodsCache {
     private final Map<String, BiConsumer> setters = new HashMap<>();
     private String className;
 
+    private static final Map<Class, Class> primitivesToObjects;
+
+    static {
+        primitivesToObjects = new HashMap<>();
+        primitivesToObjects.put(byte.class, Byte.class);
+        primitivesToObjects.put(char.class, Character.class);
+        primitivesToObjects.put(short.class, Short.class);
+        primitivesToObjects.put(int.class, Integer.class);
+        primitivesToObjects.put(long.class, Long.class);
+        primitivesToObjects.put(float.class, Float.class);
+        primitivesToObjects.put(double.class, Double.class);
+        primitivesToObjects.put(boolean.class, Boolean.class);
+    }
+
+
     public MethodsCache(Class clazz) {
         final Method[] methods = clazz.getMethods();
         for (Method method : methods) {
@@ -72,6 +87,7 @@ public class MethodsCache {
     }
 
     protected BiConsumer createSetter(Class clazz, Method method) {
+        Class valueType = method.getParameterTypes()[0];
         BiConsumer setter;
         try {
             MethodHandles.Lookup caller = MethodHandles.lookup();
@@ -80,7 +96,7 @@ public class MethodsCache {
                     MethodType.methodType(BiConsumer.class),
                     MethodType.methodType(void.class, Object.class, Object.class),
                     caller.findVirtual(clazz, method.getName(), MethodType.methodType(method.getReturnType(), method.getParameterTypes()[0])),
-                    MethodType.methodType(void.class, clazz, method.getParameterTypes()[0]));
+                    MethodType.methodType(void.class, clazz, valueType.isPrimitive() ? primitivesToObjects.get(valueType) : valueType));
             MethodHandle factory = site.getTarget();
             setter = (BiConsumer) factory.invoke();
         } catch (Throwable t) {
