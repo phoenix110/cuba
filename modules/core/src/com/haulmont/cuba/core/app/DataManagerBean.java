@@ -122,15 +122,15 @@ public class DataManagerBean implements DataManager {
 
     protected void validateEntity(Entity entity) {
         Validator validator = beanValidation.getValidator();
-        Set<ConstraintViolation<Entity>> violations = (validator.validate(entity));
+        Set<ConstraintViolation<Entity>> violations = validator.validate(entity);
         if (!violations.isEmpty())
-            throw new EntityValidationException("Entity " + entity.toString() + " validation failed.", violations);
+            throw new EntityValidationException(String.format("Entity %s validation failed.", entity.toString()), violations);
     }
 
     @Override
     @SuppressWarnings("unchecked")
     public EntitySet commit(CommitContext context) {
-        if ((CommitContext.ValidationType.DEFAULT == context.getValidationType() && serverConfig.getDataManagerBeanValidation())
+        if (CommitContext.ValidationType.DEFAULT == context.getValidationType() && serverConfig.getDataManagerBeanValidation()
                 || CommitContext.ValidationType.ALWAYS_VALIDATE == context.getValidationType()) {
             context.getCommitInstances().forEach(this::validateEntity);
         }

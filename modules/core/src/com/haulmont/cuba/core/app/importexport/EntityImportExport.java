@@ -32,6 +32,8 @@ import com.haulmont.cuba.core.app.serialization.EntitySerializationOption;
 import com.haulmont.cuba.core.entity.*;
 import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.core.global.validation.CustomValidationException;
+import com.haulmont.cuba.core.global.validation.EntityValidationException;
+import com.haulmont.cuba.core.global.validation.groups.RestApiChecks;
 import org.apache.commons.compress.archivers.ArchiveEntry;
 import org.apache.commons.compress.archivers.zip.ZipArchiveEntry;
 import org.apache.commons.compress.archivers.zip.ZipArchiveInputStream;
@@ -41,6 +43,9 @@ import org.springframework.stereotype.Component;
 
 import javax.annotation.Nullable;
 import javax.inject.Inject;
+import javax.validation.ConstraintViolation;
+import javax.validation.Validator;
+import javax.validation.groups.Default;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -84,6 +89,9 @@ public class EntityImportExport implements EntityImportExportAPI {
 
     @Inject
     protected GlobalConfig globalConfig;
+
+    @Inject
+    protected BeanValidation beanValidation;
 
     @Override
     public byte[] exportEntitiesToZIP(Collection<? extends Entity> entities, View view) {
@@ -242,10 +250,15 @@ public class EntityImportExport implements EntityImportExportAPI {
         }
 
         if (validate) {
-            commitContext.setValidationType(CommitContext.ValidationType.ALWAYS_VALIDATE);
-        } else {
-            commitContext.setValidationType(CommitContext.ValidationType.NEVER_VALIDATE);
+            Validator validator = beanValidation.getValidator();
+            for (Entity entity : commitContext.getCommitInstances()) {
+                Set<ConstraintViolation<Entity>> violations = validator.validate(entity, Default.class, RestApiChecks.class);
+                if (!violations.isEmpty()) {
+                    throw new EntityValidationException(String.format("Entity %s validation failed.", entity.toString()), violations);
+                }
+            }
         }
+        commitContext.setValidationType(CommitContext.ValidationType.NEVER_VALIDATE);
 
         //we shouldn't remove entities with the softDeletion = false
         if (!commitContext.getRemoveInstances().isEmpty()) {
