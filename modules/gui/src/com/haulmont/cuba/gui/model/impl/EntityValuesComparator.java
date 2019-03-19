@@ -43,7 +43,7 @@ public class EntityValuesComparator<T> extends AbstractComparator<T> {
 
     @Override
     public int compare(T o1, T o2) {
-        return compareAsc(transformValue(o1), transformValue(o2));
+        return __compare(transformValue(o1), transformValue(o2));
     }
 
     protected Object transformValue(T value) {

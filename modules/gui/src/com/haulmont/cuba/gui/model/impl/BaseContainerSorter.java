@@ -68,7 +68,6 @@ public abstract class BaseContainerSorter implements Sorter {
             throw new IllegalArgumentException("Property " + sort.getOrders().get(0).getProperty() + " is invalid");
         }
         boolean asc = sort.getOrders().get(0).getDirection() == Sort.Direction.ASC;
-        return Comparator.comparing(e -> e.getValueEx(propertyPath),
-                asc ? EntityValuesComparator.NATURAL_ORDER : EntityValuesComparator.REVERSE_ORDER);
+        return Comparator.comparing(e -> e.getValueEx(propertyPath), EntityValuesComparator.of(asc));
     }
 }
