@@ -34,6 +34,7 @@ import com.haulmont.cuba.gui.components.HasValue;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.DataSupplier;
 import com.haulmont.cuba.gui.data.Datasource;
+import com.haulmont.cuba.gui.model.impl.EntityValuesComparator;
 import com.haulmont.cuba.security.global.UserSession;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -496,7 +497,7 @@ public abstract class AbstractCollectionDatasource<T extends Entity<K>, K>
         if (sortInfos[0].getPropertyPath() != null) {
             final MetaPropertyPath propertyPath = sortInfos[0].getPropertyPath();
             final boolean asc = Sortable.Order.ASC.equals(sortInfos[0].getOrder());
-            return new EntityComparator<>(propertyPath, asc);
+            return Comparator.comparing(e -> e.getValueEx(propertyPath), EntityValuesComparator.of(asc));
         } else {
             // If we can not sort the datasource, just return the empty comparator.
             return (o1, o2) -> 0;
