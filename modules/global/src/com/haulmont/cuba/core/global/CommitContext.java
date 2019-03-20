@@ -194,14 +194,16 @@ public class CommitContext implements Serializable {
     }
 
     /**
-     * @return {@code ValidationType}
+     * @return {@link ValidationType} of commit context.
      */
     public ValidationType getValidationType() {
         return validationType;
     }
 
     /**
-     * @param validationType {@code ValidationType}
+     * Sets {@link ValidationType} for commit context.
+     *
+     * @param validationType validation type
      */
     public void setValidationType(ValidationType validationType) {
         this.validationType = validationType;
@@ -238,7 +240,7 @@ public class CommitContext implements Serializable {
     }
 
     /**
-     * Set groups targeted for validation. {@see javax.validation.Validator#validate(Object, Class[])}
+     * Sets groups targeted for validation. {@see javax.validation.Validator#validate(Object, Class[])}
      *
      * @param validationGroups {@code Set} of groups
      */
@@ -251,15 +253,15 @@ public class CommitContext implements Serializable {
      */
     public enum ValidationType {
         /**
-         * Use value from {@code cuba.dataManagerBeanValidation} application property
+         * Use value from {@code cuba.dataManagerBeanValidation} application property.
          */
         DEFAULT,
         /**
-         * Always perform validation
+         * Always perform validation.
          */
         ALWAYS_VALIDATE,
         /**
-         * Never perform validation
+         * Do not validate.
          */
         NEVER_VALIDATE
     }
