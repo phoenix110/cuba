@@ -251,7 +251,10 @@ public class EntityImportExport implements EntityImportExportAPI {
 
         if (validate) {
             commitContext.setValidationType(CommitContext.ValidationType.ALWAYS_VALIDATE);
-            commitContext.addValidationGroup(RestApiChecks.class);
+            Set<Class> validationGroups = new HashSet<>();
+            validationGroups.add(Default.class);
+            validationGroups.add(RestApiChecks.class);
+            commitContext.setValidationGroups(validationGroups);
         } else {
             commitContext.setValidationType(CommitContext.ValidationType.NEVER_VALIDATE);
         }

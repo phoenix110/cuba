@@ -126,7 +126,7 @@ public class DataManagerBean implements DataManager {
         if (validationGroups == null || validationGroups.isEmpty()) {
             violations = validator.validate(entity);
         } else {
-            violations = validator.validate(entity, validationGroups.toArray(new Class[validationGroups.size()]));
+            violations = validator.validate(entity, validationGroups.toArray(new Class[0]));
         }
         if (!violations.isEmpty())
             throw new EntityValidationException(String.format("Entity %s validation failed.", entity.toString()), violations);

@@ -247,30 +247,6 @@ public class CommitContext implements Serializable {
     }
 
     /**
-     * Adds group targeted for validation. If current groups set is {@code null} creates {@code HashSet}
-     * contains {@link Default} group.
-     */
-    public void addValidationGroup(Class validationGroup) {
-        if (validationGroups == null) {
-            validationGroups = new HashSet<>();
-            validationGroups.add(Default.class);
-        }
-        validationGroups.add(validationGroup);
-    }
-
-    /**
-     * Removes group targeted for validation. If current groups set is {@code null} creates {@code HashSet}
-     * contains {@link Default} group.
-     */
-    public void removeValidationGroup(Class validationGroup) {
-        if (validationGroups == null) {
-            validationGroups = new HashSet<>();
-            validationGroups.add(Default.class);
-        }
-        validationGroups.remove(validationGroup);
-    }
-
-    /**
      * Validation type. Responsible for entity bean validation on {@link DataManager} level.
      */
     public enum ValidationType {
