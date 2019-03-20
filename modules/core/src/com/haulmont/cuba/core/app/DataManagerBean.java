@@ -120,7 +120,7 @@ public class DataManagerBean implements DataManager {
         return reloaded;
     }
 
-    protected void validateEntity(Entity entity, Set<Class> validationGroups) {
+    protected void validateEntity(Entity entity, List<Class> validationGroups) {
         Validator validator = beanValidation.getValidator();
         Set<ConstraintViolation<Entity>> violations;
         if (validationGroups == null || validationGroups.isEmpty()) {

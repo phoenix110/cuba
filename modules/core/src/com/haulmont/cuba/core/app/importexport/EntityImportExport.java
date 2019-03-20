@@ -32,7 +32,6 @@ import com.haulmont.cuba.core.app.serialization.EntitySerializationOption;
 import com.haulmont.cuba.core.entity.*;
 import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.core.global.validation.CustomValidationException;
-import com.haulmont.cuba.core.global.validation.EntityValidationException;
 import com.haulmont.cuba.core.global.validation.groups.RestApiChecks;
 import org.apache.commons.compress.archivers.ArchiveEntry;
 import org.apache.commons.compress.archivers.zip.ZipArchiveEntry;
@@ -43,8 +42,6 @@ import org.springframework.stereotype.Component;
 
 import javax.annotation.Nullable;
 import javax.inject.Inject;
-import javax.validation.ConstraintViolation;
-import javax.validation.Validator;
 import javax.validation.groups.Default;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -89,9 +86,6 @@ public class EntityImportExport implements EntityImportExportAPI {
 
     @Inject
     protected GlobalConfig globalConfig;
-
-    @Inject
-    protected BeanValidation beanValidation;
 
     @Override
     public byte[] exportEntitiesToZIP(Collection<? extends Entity> entities, View view) {
@@ -251,10 +245,7 @@ public class EntityImportExport implements EntityImportExportAPI {
 
         if (validate) {
             commitContext.setValidationType(CommitContext.ValidationType.ALWAYS_VALIDATE);
-            Set<Class> validationGroups = new HashSet<>();
-            validationGroups.add(Default.class);
-            validationGroups.add(RestApiChecks.class);
-            commitContext.setValidationGroups(validationGroups);
+            commitContext.setValidationGroups(Arrays.asList(Default.class, RestApiChecks.class));
         } else {
             commitContext.setValidationType(CommitContext.ValidationType.NEVER_VALIDATE);
         }

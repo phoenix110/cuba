@@ -19,7 +19,6 @@ package com.haulmont.cuba.core.global;
 import com.haulmont.cuba.core.entity.Entity;
 
 import javax.annotation.Nullable;
-import javax.validation.groups.Default;
 import java.io.Serializable;
 import java.util.*;
 
@@ -43,7 +42,7 @@ public class CommitContext implements Serializable {
     protected boolean joinTransaction;
     protected ValidationType validationType = ValidationType.DEFAULT;
     protected Map<String, Object> dbHints = new HashMap<>();
-    protected Set<Class> validationGroups;
+    protected List<Class> validationGroups;
 
     /**
      * @param commitInstances changed entities to be committed to the database
@@ -234,15 +233,16 @@ public class CommitContext implements Serializable {
     /**
      * @return groups targeted for validation. {@see javax.validation.Validator#validate(Object, Class[])}
      */
-    public Set<Class> getValidationGroups() {
+    public List<Class> getValidationGroups() {
         return validationGroups;
     }
 
     /**
      * Set groups targeted for validation. {@see javax.validation.Validator#validate(Object, Class[])}
+     *
      * @param validationGroups {@code Set} of groups
      */
-    public void setValidationGroups(Set<Class> validationGroups) {
+    public void setValidationGroups(List<Class> validationGroups) {
         this.validationGroups = validationGroups;
     }
 
