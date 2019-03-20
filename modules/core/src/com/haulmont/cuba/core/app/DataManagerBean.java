@@ -120,9 +120,14 @@ public class DataManagerBean implements DataManager {
         return reloaded;
     }
 
-    protected void validateEntity(Entity entity) {
+    protected void validateEntity(Entity entity, Set<Class> validationGroups) {
         Validator validator = beanValidation.getValidator();
-        Set<ConstraintViolation<Entity>> violations = validator.validate(entity);
+        Set<ConstraintViolation<Entity>> violations;
+        if (validationGroups == null || validationGroups.isEmpty()) {
+            violations = validator.validate(entity);
+        } else {
+            violations = validator.validate(entity, validationGroups.toArray(new Class[validationGroups.size()]));
+        }
         if (!violations.isEmpty())
             throw new EntityValidationException(String.format("Entity %s validation failed.", entity.toString()), violations);
     }
@@ -132,7 +137,7 @@ public class DataManagerBean implements DataManager {
     public EntitySet commit(CommitContext context) {
         if (CommitContext.ValidationType.DEFAULT == context.getValidationType() && serverConfig.getDataManagerBeanValidation()
                 || CommitContext.ValidationType.ALWAYS_VALIDATE == context.getValidationType()) {
-            context.getCommitInstances().forEach(this::validateEntity);
+            context.getCommitInstances().forEach(entity -> validateEntity(entity, context.getValidationGroups()));
         }
 
         Map<String, CommitContext> storeToContextMap = new TreeMap<>();
@@ -267,6 +272,7 @@ public class DataManagerBean implements DataManager {
         newCtx.setAuthorizationRequired(context.isAuthorizationRequired());
         newCtx.setJoinTransaction(context.isJoinTransaction());
         newCtx.setValidationType(context.getValidationType());
+        newCtx.setValidationGroups(context.getValidationGroups());
         return newCtx;
     }
 

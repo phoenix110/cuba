@@ -250,15 +250,11 @@ public class EntityImportExport implements EntityImportExportAPI {
         }
 
         if (validate) {
-            Validator validator = beanValidation.getValidator();
-            for (Entity entity : commitContext.getCommitInstances()) {
-                Set<ConstraintViolation<Entity>> violations = validator.validate(entity, Default.class, RestApiChecks.class);
-                if (!violations.isEmpty()) {
-                    throw new EntityValidationException(String.format("Entity %s validation failed.", entity.toString()), violations);
-                }
-            }
+            commitContext.setValidationType(CommitContext.ValidationType.ALWAYS_VALIDATE);
+            commitContext.addValidationGroup(RestApiChecks.class);
+        } else {
+            commitContext.setValidationType(CommitContext.ValidationType.NEVER_VALIDATE);
         }
-        commitContext.setValidationType(CommitContext.ValidationType.NEVER_VALIDATE);
 
         //we shouldn't remove entities with the softDeletion = false
         if (!commitContext.getRemoveInstances().isEmpty()) {

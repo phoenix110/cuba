@@ -19,6 +19,7 @@ package com.haulmont.cuba.core.global;
 import com.haulmont.cuba.core.entity.Entity;
 
 import javax.annotation.Nullable;
+import javax.validation.groups.Default;
 import java.io.Serializable;
 import java.util.*;
 
@@ -42,6 +43,7 @@ public class CommitContext implements Serializable {
     protected boolean joinTransaction;
     protected ValidationType validationType = ValidationType.DEFAULT;
     protected Map<String, Object> dbHints = new HashMap<>();
+    protected Set<Class> validationGroups;
 
     /**
      * @param commitInstances changed entities to be committed to the database
@@ -230,14 +232,59 @@ public class CommitContext implements Serializable {
     }
 
     /**
+     * @return groups targeted for validation. {@see javax.validation.Validator#validate(Object, Class[])}
+     */
+    public Set<Class> getValidationGroups() {
+        return validationGroups;
+    }
+
+    /**
+     * Set groups targeted for validation. {@see javax.validation.Validator#validate(Object, Class[])}
+     * @param validationGroups {@code Set} of groups
+     */
+    public void setValidationGroups(Set<Class> validationGroups) {
+        this.validationGroups = validationGroups;
+    }
+
+    /**
+     * Adds group targeted for validation. If current groups set is {@code null} creates {@code HashSet}
+     * contains {@link Default} group.
+     */
+    public void addValidationGroup(Class validationGroup) {
+        if (validationGroups == null) {
+            validationGroups = new HashSet<>();
+            validationGroups.add(Default.class);
+        }
+        validationGroups.add(validationGroup);
+    }
+
+    /**
+     * Removes group targeted for validation. If current groups set is {@code null} creates {@code HashSet}
+     * contains {@link Default} group.
+     */
+    public void removeValidationGroup(Class validationGroup) {
+        if (validationGroups == null) {
+            validationGroups = new HashSet<>();
+            validationGroups.add(Default.class);
+        }
+        validationGroups.remove(validationGroup);
+    }
+
+    /**
      * Validation type. Responsible for entity bean validation on {@link DataManager} level.
      */
     public enum ValidationType {
-        /** Use value from {@code cuba.dataManagerBeanValidation} application property */
+        /**
+         * Use value from {@code cuba.dataManagerBeanValidation} application property
+         */
         DEFAULT,
-        /** Always perform validation */
+        /**
+         * Always perform validation
+         */
         ALWAYS_VALIDATE,
-        /** Never perform validation */
+        /**
+         * Never perform validation
+         */
         NEVER_VALIDATE
     }
 }
