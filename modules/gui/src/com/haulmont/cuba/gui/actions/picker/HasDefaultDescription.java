@@ -22,7 +22,7 @@ package com.haulmont.cuba.gui.actions.picker;
 public interface HasDefaultDescription {
 
     /**
-     * @return action's default description that is defined in messages
+     * @return action's default description that is defined in main message pack
      */
     String getDefaultDescription();
 }
