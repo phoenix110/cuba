@@ -405,6 +405,7 @@ public class EntityLog implements EntityLogAPI {
         item.setUser(findUser(em));
         item.setType(EntityLogItem.Type.CREATE);
         item.setEntity(entityName);
+        item.setEntityInstanceName(metadataTools.getInstanceName(entity));
         if (entity instanceof BaseDbGeneratedIdEntity) {
             item.setDbGeneratedIdEntity((BaseDbGeneratedIdEntity) entity);
         } else {
@@ -435,6 +436,7 @@ public class EntityLog implements EntityLogAPI {
             item.setUser(findUser(em));
             item.setType(EntityLogItem.Type.MODIFY);
             item.setEntity(getEntityName(entity));
+            item.setEntityInstanceName(metadataTools.getInstanceName(entity));
             item.setObjectEntityId(entity.getObjectEntityId());
             item.setAttributes(createDynamicLogAttribute(entity, changes, registerDeleteOp));
 
@@ -551,6 +553,7 @@ public class EntityLog implements EntityLogAPI {
             item.setUser(findUser(em));
             item.setType(type);
             item.setEntity(metadata.getExtendedEntities().getOriginalOrThisMetaClass(metaClass).getName());
+            item.setEntityInstanceName(metadataTools.getInstanceName(entity));
             item.setObjectEntityId(referenceToEntitySupport.getReferenceId(entity));
             item.setAttributes(entityLogAttrs);
 
@@ -689,6 +692,7 @@ public class EntityLog implements EntityLogAPI {
         item.setUser(findUser(em));
         item.setType(EntityLogItem.Type.DELETE);
         item.setEntity(entityName);
+        item.setEntityInstanceName(metadataTools.getInstanceName(entity));
         item.setObjectEntityId(referenceToEntitySupport.getReferenceId(entity));
         item.setAttributes(createLogAttributes(entity, attributes, null));
 
