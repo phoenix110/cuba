@@ -19,8 +19,8 @@ package com.haulmont.cuba.core.app;
 import com.haulmont.chile.core.model.MetaPropertyPath;
 
 /**
- * Spring bean that generates sort expression for datatype and LOB properties
- * It's possible to override bean and use custom sort logic, e.g. use functions
+ * Spring bean that generates sort expression for datatype and LOB properties.
+ * It's possible to override bean and use custom sort logic, e.g. use functions.
  */
 public interface JpqlSortExpressionProvider {
 
@@ -39,7 +39,7 @@ public interface JpqlSortExpressionProvider {
     String getDatatypeSortExpression(MetaPropertyPath metaPropertyPath, boolean sortDirectionAsc);
 
     /**
-     * Returns JPQL order expression for specified lob property
+     * Returns JPQL order expression for specified lob property.
      */
     String getLobSortExpression(MetaPropertyPath metaPropertyPath, boolean sortDirectionAsc);
 }
