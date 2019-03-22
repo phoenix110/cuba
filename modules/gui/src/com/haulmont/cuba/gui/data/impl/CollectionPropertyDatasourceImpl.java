@@ -888,7 +888,7 @@ public class CollectionPropertyDatasourceImpl<T extends Entity<K>, K>
     protected Comparator<T> createEntityComparator() {
         MetaPropertyPath propertyPath = sortInfos[0].getPropertyPath();
         boolean asc = Order.ASC.equals(sortInfos[0].getOrder());
-        return Comparator.comparing(e -> e.getValueEx(propertyPath), EntityValuesComparator.of(asc));
+        return Comparator.comparing(e -> e.getValueEx(propertyPath), EntityValuesComparator.asc(asc));
     }
 
     @Override

@@ -65,6 +65,6 @@ public abstract class AbstractTreeTableDatasource<T extends Entity<K>, K>
         final boolean asc = Order.ASC.equals(sortInfos[0].getOrder());
 
         return Comparator.comparing(node -> node != null ? node.getData().getValueEx(propertyPath) : null,
-                EntityValuesComparator.of(asc));
+                EntityValuesComparator.asc(asc));
     }
 }

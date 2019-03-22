@@ -34,7 +34,7 @@ public class GroupDatasourceImpl<T extends Entity<K>, K>
 
     protected GroupSortDelegate groupSortDelegate = (groups, sortInfo) -> {
         boolean asc = CollectionDatasource.Sortable.Order.ASC.equals(sortInfo[0].getOrder());
-        groups.sort(Comparator.comparing(GroupInfo::getValue, EntityValuesComparator.of(asc)));
+        groups.sort(Comparator.comparing(GroupInfo::getValue, EntityValuesComparator.asc(asc)));
     };
 
     protected GroupDelegate<T,K> groupDelegate = new GroupDelegate<T, K>(this,

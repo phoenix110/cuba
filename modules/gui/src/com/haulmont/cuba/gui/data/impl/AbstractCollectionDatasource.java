@@ -497,7 +497,7 @@ public abstract class AbstractCollectionDatasource<T extends Entity<K>, K>
         if (sortInfos[0].getPropertyPath() != null) {
             final MetaPropertyPath propertyPath = sortInfos[0].getPropertyPath();
             final boolean asc = Sortable.Order.ASC.equals(sortInfos[0].getOrder());
-            return Comparator.comparing(e -> e.getValueEx(propertyPath), EntityValuesComparator.of(asc));
+            return Comparator.comparing(e -> e.getValueEx(propertyPath), EntityValuesComparator.asc(asc));
         } else {
             // If we can not sort the datasource, just return the empty comparator.
             return (o1, o2) -> 0;

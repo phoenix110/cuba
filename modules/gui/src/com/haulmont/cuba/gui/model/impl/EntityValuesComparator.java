@@ -23,7 +23,7 @@ import com.haulmont.cuba.gui.data.impl.AbstractComparator;
 import java.util.Comparator;
 
 /**
- * A comparison function, which imposes a ordering for entity field values.
+ * A comparison function, which imposes a ordering for entity attribute values.
  * <p>
  * For example, to obtain a {@code Comparator} that compares {@code com.haulmont.cuba.core.entity.Entity} objects
  * by some property that is specified by {@code com.haulmont.chile.core.model.MetaPropertyPath}:
@@ -33,7 +33,7 @@ public class EntityValuesComparator<T> extends AbstractComparator<T> {
     public static final Comparator<Object> NATURAL_ORDER = new EntityValuesComparator<>(true);
     public static final Comparator<Object> REVERSE_ORDER = new EntityValuesComparator<>(false);
 
-    public static Comparator<Object> of(boolean asc) {
+    public static Comparator<Object> asc(boolean asc) {
         return asc ? NATURAL_ORDER : REVERSE_ORDER;
     }
 
