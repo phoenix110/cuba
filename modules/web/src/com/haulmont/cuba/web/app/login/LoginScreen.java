@@ -24,6 +24,7 @@ import com.haulmont.cuba.gui.Notifications;
 import com.haulmont.cuba.gui.Route;
 import com.haulmont.cuba.gui.Screens;
 import com.haulmont.cuba.gui.components.*;
+import com.haulmont.cuba.gui.screen.OpenMode;
 import com.haulmont.cuba.gui.screen.Screen;
 import com.haulmont.cuba.gui.screen.Subscribe;
 import com.haulmont.cuba.gui.screen.UiController;
@@ -147,16 +148,13 @@ public class LoginScreen extends Screen {
                     passwordField.getValue(),
                     rememberMeCheckBox.getValue());
 
-            app.createTopLevelWindow();
+            Screen loginScreen = screens.create(webConfig.getLoginScreenId(), OpenMode.ROOT);
 
-            Screen rootScreen = screens.getOpenedScreens()
-                    .getRootScreenOrNull();
-
-            if (rootScreen instanceof LoginScreen) {
-                LoginScreen newLoginScreen = (LoginScreen) rootScreen;
-
-                newLoginScreen.setAuthInfo(authInfo);
+            if (loginScreen instanceof LoginScreen) {
+                ((LoginScreen) loginScreen).setAuthInfo(authInfo);
             }
+
+            loginScreen.show();
         });
     }
 
