@@ -48,9 +48,7 @@ import javax.inject.Inject;
 public class MainScreen extends Screen implements Window.HasWorkArea, Window.HasUserIndicator {
 
     @Inject
-    protected AppMenu mainMenu;
-    @Inject
-    protected BoxLayout titleBar;
+    protected SideMenu sideMenu;
     @Inject
     protected FtsField ftsField;
     @Inject
@@ -71,15 +69,11 @@ public class MainScreen extends Screen implements Window.HasWorkArea, Window.Has
 
     @Subscribe
     protected void onInit(InitEvent event) {
-        mainMenu.focus();
+        sideMenu.focus();
 
         initLogoImage(logoImage);
         initLayoutAnalyzerContextMenu(logoImage);
         initFtsField(ftsField);
-
-        if (webConfig.getUseInverseHeader()) {
-            titleBar.setStyleName("c-app-menubar c-inverse-header");
-        }
     }
 
     @Order(Events.LOWEST_PLATFORM_PRECEDENCE - 100)
