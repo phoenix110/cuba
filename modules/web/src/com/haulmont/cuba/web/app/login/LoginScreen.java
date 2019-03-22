@@ -22,6 +22,7 @@ import com.haulmont.cuba.core.global.GlobalConfig;
 import com.haulmont.cuba.core.global.Messages;
 import com.haulmont.cuba.gui.Notifications;
 import com.haulmont.cuba.gui.Route;
+import com.haulmont.cuba.gui.Screens;
 import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.screen.Screen;
 import com.haulmont.cuba.gui.screen.Subscribe;
@@ -59,37 +60,12 @@ public class LoginScreen extends Screen {
 
     private static final Logger log = LoggerFactory.getLogger(LoginScreen.class);
 
-    protected static final ThreadLocal<AuthInfo> authInfoThreadLocal = new ThreadLocal<>();
-
     public static final String COOKIE_REMEMBER_ME = "rememberMe";
     public static final String COOKIE_LOGIN = "rememberMe.Login";
     public static final String COOKIE_PASSWORD = "rememberMe.Password";
-    private Subscription loginFieldSubscription;
-    private Subscription passwordFieldSubscription;
 
-    public static class AuthInfo {
-        private String login;
-        private String password;
-        private Boolean rememberMe;
-
-        public AuthInfo(String login, String password, Boolean rememberMe) {
-            this.login = login;
-            this.password = password;
-            this.rememberMe = rememberMe;
-        }
-
-        public String getLogin() {
-            return login;
-        }
-
-        public String getPassword() {
-            return password;
-        }
-
-        public Boolean getRememberMe() {
-            return rememberMe;
-        }
-    }
+    protected Subscription loginFieldSubscription;
+    protected Subscription passwordFieldSubscription;
 
     @Inject
     protected GlobalConfig globalConfig;
@@ -104,6 +80,8 @@ public class LoginScreen extends Screen {
     protected Messages messages;
     @Inject
     protected Notifications notifications;
+    @Inject
+    protected Screens screens;
 
     @Inject
     protected App app;
@@ -163,17 +141,21 @@ public class LoginScreen extends Screen {
         }
 
         localesSelect.addValueChangeListener(e -> {
-            Locale selectedLocale = e.getValue();
+            app.setLocale(e.getValue());
 
-            app.setLocale(selectedLocale);
-
-            authInfoThreadLocal.set(new AuthInfo(loginField.getValue(),
+            AuthInfo authInfo = new AuthInfo(loginField.getValue(),
                     passwordField.getValue(),
-                    rememberMeCheckBox.getValue()));
-            try {
-                app.createTopLevelWindow();
-            } finally {
-                authInfoThreadLocal.set(null);
+                    rememberMeCheckBox.getValue());
+
+            app.createTopLevelWindow();
+
+            Screen rootScreen = screens.getOpenedScreens()
+                    .getRootScreenOrNull();
+
+            if (rootScreen instanceof LoginScreen) {
+                LoginScreen newLoginScreen = (LoginScreen) rootScreen;
+
+                newLoginScreen.setAuthInfo(authInfo);
             }
         });
     }
@@ -223,19 +205,6 @@ public class LoginScreen extends Screen {
     }
 
     protected void initDefaultCredentials() {
-        AuthInfo authInfo = authInfoThreadLocal.get();
-        if (authInfo != null) {
-            loginField.setValue(authInfo.getLogin());
-            passwordField.setValue(authInfo.getPassword());
-            rememberMeCheckBox.setValue(authInfo.getRememberMe());
-
-            localesSelect.focus();
-
-            authInfoThreadLocal.set(null);
-
-            return;
-        }
-
         String defaultUser = webConfig.getLoginDialogDefaultUser();
         if (!StringUtils.isBlank(defaultUser) && !"<disabled>".equals(defaultUser)) {
             loginField.setValue(defaultUser);
@@ -366,5 +335,38 @@ public class LoginScreen extends Screen {
             ((AbstractClientCredentials) credentials).setOverrideLocale(localesSelect.isVisibleRecursive());
         }
         connection.login(credentials);
+    }
+
+    protected void setAuthInfo(AuthInfo authInfo) {
+        loginField.setValue(authInfo.getLogin());
+        passwordField.setValue(authInfo.getPassword());
+        rememberMeCheckBox.setValue(authInfo.getRememberMe());
+
+        localesSelect.focus();
+    }
+
+    public static class AuthInfo {
+
+        private final String login;
+        private final String password;
+        private final Boolean rememberMe;
+
+        public AuthInfo(String login, String password, Boolean rememberMe) {
+            this.login = login;
+            this.password = password;
+            this.rememberMe = rememberMe;
+        }
+
+        public String getLogin() {
+            return login;
+        }
+
+        public String getPassword() {
+            return password;
+        }
+
+        public Boolean getRememberMe() {
+            return rememberMe;
+        }
     }
 }
