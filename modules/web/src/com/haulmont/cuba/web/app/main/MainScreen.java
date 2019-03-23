@@ -47,8 +47,12 @@ import javax.inject.Inject;
 @UiController("main")
 public class MainScreen extends Screen implements Window.HasWorkArea, Window.HasUserIndicator {
 
-    @Inject
-    protected SideMenu sideMenu;
+    protected static final String APP_MENU = "mainMenu";
+    protected static final String TITLE_BAR = "titleBar";
+    protected static final String SIDE_MENU = "sideMenu";
+
+    protected static final String INVERSE_MENU_STYLENAME = "c-app-menubar c-inverse-header";
+
     @Inject
     protected FtsField ftsField;
     @Inject
@@ -67,13 +71,15 @@ public class MainScreen extends Screen implements Window.HasWorkArea, Window.Has
     @Inject
     protected ScreenTools screenTools;
 
+    protected Component menu;
+
     @Subscribe
     protected void onInit(InitEvent event) {
-        sideMenu.focus();
-
         initLogoImage(logoImage);
         initLayoutAnalyzerContextMenu(logoImage);
         initFtsField(ftsField);
+
+        initMenu();
     }
 
     @Order(Events.LOWEST_PLATFORM_PRECEDENCE - 100)
@@ -109,6 +115,20 @@ public class MainScreen extends Screen implements Window.HasWorkArea, Window.Has
     protected void initFtsField(FtsField ftsField) {
         if (!FtsConfigHelper.getEnabled()) {
             ftsField.setVisible(false);
+        }
+    }
+
+    protected void initMenu() {
+        menu = getWindow().getComponent(SIDE_MENU);
+
+        if (menu == null) {
+            menu = getWindow().getComponent(APP_MENU);
+            if (menu != null && webConfig.getUseInverseHeader()) {
+                Component titleBar = getWindow().getComponent(TITLE_BAR);
+                if (titleBar != null) {
+                    titleBar.setStyleName(INVERSE_MENU_STYLENAME);
+                }
+            }
         }
     }
 
